@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsPlanetAi: Global News Summarized by AI</title>
+    <meta name="description" content="Stay updated with world news using NewsPlanetAi. Our AI technology reads, categorizes, and summarizes news from numerous sources, giving you concise and balanced reports.">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WGK21PMFSZ"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3-geo.v1.min.js"></script>
+    <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7878015482627311"
+    crossorigin="anonymous"></script>
+    
+    <script>
+        function toggleSummary(articleID) {
+            const excerpt = document.getElementById('excerpt-' + articleID);
+            const fullSummary = document.getElementById('full-' + articleID);
+            
+            if (fullSummary.style.display === 'none' || !fullSummary.style.display) {
+                fullSummary.style.display = 'block';
+                excerpt.style.display = 'none';
+            } else {
+                fullSummary.style.display = 'none';
+                excerpt.style.display = 'inline';
+            }
+        }
+        function toggleSuperSummary() {
+            const superSummaryExcerpt = document.getElementById('super-summary-excerpt');
+            const superSummaryFull = document.getElementById('super-summary');
+            const soundcloudElement = document.getElementById('soundcloud-iframe');  // New line
+        
+            if (superSummaryFull.style.display === 'none') {
+                superSummaryFull.style.display = 'inline';
+                soundcloudElement.style.display = 'block';  // New line
+                superSummaryExcerpt.style.display = 'none';
+                gtag('event', 'expand', { 'event_category': 'Super Summary' });
+            } else {
+                superSummaryFull.style.display = 'none';
+                soundcloudElement.style.display = 'none';  // New line
+                superSummaryExcerpt.style.display = 'inline';
+                gtag('event', 'collapse', { 'event_category': 'Super Summary' });
+            }
+        }
+        function shareArticle(articleID) {
+            const headline = document.querySelector('#headline-' + articleID).innerText;
+            const summary = document.querySelector('#summary-' + articleID).innerText;
+            const timestamp = document.querySelector('#timestamp-' + articleID).innerText;
+        
+            // Static link to your website
+            const link = "https://www.newsplanetai.com";
+
+            const textToShare = `${headline}\n\n${summary}\n\nRead more at: ${link}`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: "Shared Article from NewsPlanetAi",  // customize this title if needed
+                    text: textToShare
+                })
+                .then(() => console.log('Successful share'))
+                .catch((error) => console.log('Error sharing:', error.name, error.message));
+            } else {
+                console.log(`Share not supported on this browser, do it manually:\n${textToShare}`);
+            }
+        }
+        
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-WGK21PMFSZ');
+
+    </script>
+</head>
+<!-- Google tag (gtag.js) -->
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-navbar">
+        <a class="navbar-brand" href="#">NewsPlanetAi</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav" id="dynamic-navbar">
+                <li class="nav-item">
+                    <a class="nav-link" href="#map-container">Globe</a>
+                </li>
+                <!-- Dynamic navbar items will be inserted here -->
+                <li class="nav-item">
+                    <a class="nav-link" href="https://emailcontent.newsplanetai.com/map_folio.html" target="_blank">Premium Map</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="about.html">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="privacy.html">Privacy</a>
+                </li>
+            </ul>
+        </div>
+      </nav>
+    
+<div style="height:25px;"></div>
+
+<!-- cut from here -->
+    <div class="container mt-4">
+
+        <div id="super-summary-container" style="display: block; margin: 5rem auto 0 auto; width: 80%;">
+            <h1>Super Summary</h1>
+            <span id="super-summary-excerpt">Let's begin with the Super Summary, your hourly briefing of the day's most significant events:</span>
+            <div id="soundcloud-iframe" style="display: none;">
+                <div class="soundcloud-wrapper">
+                    <h3>Podcast - Listen</h3>
+                    <iframe width="90%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1573351840&color=%233da0ae&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/norsninja" title="NewsPlanetAI" target="_blank" style="color: #cccccc; text-decoration: none;">NewsPlanetAI</a> · <a href="https://soundcloud.com/norsninja/daily-briefing-july-24-2023-830-am" title="Daily Briefing - July 24, 2023 - 8:30 AM" target="_blank" style="color: #cccccc; text-decoration: none;">Daily Briefing - July 24, 2023 - 8:30 AM</a></div>
+                </div>
+                </div>
+
+            <p id="super-summary" style="white-space: pre-wrap; display: none;">{{ super_summary }}</p>
+            <p></p>
+             <span onclick="toggleSuperSummary()" class="more-button pulse">Open</span>
+       
+        </div>
+        
+        <hr>
+        <h2 class="map-title">News around the Planet</h2>
+        <div id="map-container" style="position:relative;">
+            <script src="static\js\server_map.js"></script>
+            <div id="tooltip" style="position: absolute; opacity: 0;"></div>
+        </div>
+        
+<!--Start News Headlines --> 
+        <input type="text" id="search-input" placeholder="Search news..." />
+        <button onclick="performSearch()">Search</button>
+        <div id="search-results"></div>
+        <script src="static/js/news.js"></script>
+        <div id="content" class="content">
+            <!-- content will be dynamically generated -->
+        </div>
+            <div id="mc_embed_signup">
+                <h2>Sign up for Daily Briefings</h2>
+                <p>Daily briefings include the super summary and link to the podcast, also the weekly recap of the news video every Friday.</p>
+            
+                <form method="post" name="subscribeform" id="subscribeform" enctype="multipart/form-data">
+                    <div class="required">Email</div>
+                    <div class="input-container">
+                        <input type="text" name="email" id="email" class="attributeinput">
+                    </div>
+                    <input type=hidden name="htmlemail" value="1">
+                    <input type="hidden" name="list[2]" value="signup">
+                    <input type="hidden" name="subscribe" value="subscribe">
+                    <div style="display:none">
+                        <input type="text" name="VerificationCodeX" value="" size="20">
+                    </div>
+                    <button class='button'>Subscribe</button>
+                    <div id="result" style="color: rgb(0, 81, 255);"></div>
+                </form>
+            </div>
+                
+                <script type="text/javascript">
+                    function checkform() {
+                        var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+                
+                        if (!(re.test(jQuery("#email").val()))) {
+                            jQuery("#result").empty().append("Please enter a valid email address");
+                            jQuery("#email").focus();
+                            return false;
+                        }
+                
+                        return true;
+                    }
+                
+                    function submitForm() {
+                        var successMessage = 'Thank you for your registration. Please check your email to confirm.';
+                        var data = jQuery('#subscribeform').serialize();
+                        jQuery.ajax({
+                            type: 'POST',
+                            data: data,
+                            url: 'https://email.newsplanetai.com/?p=subscribe&id=1',
+                            dataType: 'html',
+                            success: function (data, status, request) {
+                                jQuery("#result").empty().append(data != '' ? data : successMessage);
+                                jQuery('#email').val('');
+                            },
+                            error: function (request, status, error) {
+                                alert('Sorry, we were unable to process your subscription.');
+                            }
+                        });
+                    }
+                
+                    jQuery(document).ready(function() {
+                        jQuery('#subscribeform').on('submit', function(e) {
+                            e.preventDefault();
+                
+                            if (!checkform()) {
+                                return;
+                            }
+                
+                            submitForm();
+                        });
+                    });
+                </script>
+                
+                  
+                </div> 
+
+</div>
+<!--
+    <div class="container mt-4">
+        <iframe loading="lazy" src="https://liveuamap.com/" width="100%" height="500px" frameborder="0" allowfullscreen style="margin-top: 20px;"></iframe>
+    </div>
+-->
+
+<footer class="bg-dark py-4 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                    <p>NewsPlanetAi is your personal AI-powered news assistant. We gather news from global sources, categorize them into relevant sections, and generate concise summaries using advanced AI technology. Every hour, we also provide a 'Super Summary' - a brief overview of the most important global events.</p>
+
+                    <p>We aim to save you time and keep you informed by sifting through multiple news sources and providing balanced, objective summaries of global happenings.</p>
+                    <p>Our news sources include trusted outlets such as <a href='https://news.google.com/rss'>Google News</a>, <a href='http://feeds.bbci.co.uk/news/rss.xml'>BBC</a>, <a href='https://www.aljazeera.com/xml/rss/all.xml'>Al Jazeera</a>, <a href='https://www.scmp.com/rss/4/feed'>South China Morning Post</a>, <a href='https://timesofindia.indiatimes.com/rssfeedstopstories.cms'>Times of India</a>, <a href='https://www.arabnews.com/rss.xml'>Arab News</a>, <a href='https://www.allsides.com/rss/news'>AllSides</a>, <a href='https://www.nationalreview.com/feed/'>National Review</a>, <a href='https://www.politico.com/rss/politicopicks.xml'>Politico</a>, <a href='https://www.yahoo.com/news/rss'>Yahoo News</a>, <a href='https://feeds.bloomberg.com/markets/news.rss'>Bloomberg</a>,<a href='https://sports.yahoo.com/rss/'>Yahoo Sports</a>, <a href='https://www.space.com/feeds/all'>Space.com</a>, <a href='https://news.ycombinator.com/rss'>Hacker News</a>, <a href='http://feeds.arstechnica.com/arstechnica/index/'>Ars Technica</a>, <a href='https://www.nature.com/nature.rss'>Nature</a>, <a href='https://www.maritime-executive.com/articles.rss'>The Maritime Executive</a>, <a href='https://www.pravda.com.ua/eng/rss/view_news/'>Ukrayinska Pravda</a>, <a href='https://www.themoscowtimes.com/rss/news'>The Moscow Times</a>, <a href='https://www.understandingwar.org/feeds-publications.xml'>Institute for the Study of War</a></p>
+                    <p>Stay informed with NewsPlanetAi - your one-stop solution for efficient news reading.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
