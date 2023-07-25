@@ -17,7 +17,7 @@ def load_cache(filename):
     with open(filename, 'rb') as file:
         return pickle.load(file)
 
-def save_to_weekly_cache(summaries, cache_file='cache/test_weekly_cache.pkl'):
+def save_to_weekly_cache(summaries, cache_file='cache/modular_weekly_cache.pkl'):
     try:
         # Load the existing cache or create a new one if it doesn't exist
         if os.path.exists(cache_file):

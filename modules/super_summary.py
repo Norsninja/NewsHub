@@ -15,6 +15,7 @@ config.read('modules/suite_config.ini')
 use_tqdm = config.getboolean('General', 'UseTqdm')
 get_super_summary_model = config['Models']['GetSuperSummary']
 openai_api_key = config['OPENAI']['OPENAI_API_KEY']
+cache_file = config['Cache']['DailyCacheFile']
 
 openai.api_key = openai_api_key
 
@@ -27,8 +28,6 @@ def get_latest_super_summary_file(directory):
 
 def get_super_summary():
     #load the summaries from cache.
-    cache_dir = 'cache'
-    cache_file = os.path.join(cache_dir, 'summaries.p')
     summaries = []
     max_cache_age_hours = 12
     # obtain the current date and time

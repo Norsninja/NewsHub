@@ -17,6 +17,8 @@ g = Goose()
 def scrape_headlines(source, num_articles):
     headlines = []
     # Parse the RSS feed
+    print(source)
+    
     feed = feedparser.parse(source)
 
     for entry in feed.entries[:num_articles]:

@@ -103,6 +103,7 @@ def get_coordinates(locations):
             # If geocoding is successful, append the coordinates
             if geolocation is not None:
                 coordinates.append((geolocation.latitude, geolocation.longitude))
+                print(coordinates)
             else:
                 # If geocoding fails, append None coordinates
                 coordinates.append((None, None))
@@ -127,8 +128,47 @@ def append_locations_to_news_json(news, summaries, locations, coordinates):
                 news_summary['coordinates'] = coordinates[index]  # Add this line
     return news
 
+def generate_geojson(summaries, extracted_locations, coordinates):
+    features = []
 
-    # Save the updated news data back to the news.json file
-    with open('news.json', 'w', encoding='utf-8') as f:
-        json.dump(news, f, indent=4)
+    for i in range(len(summaries)):
+        headline, category, text, url, timestamp, source = summaries[i]
+        location = extracted_locations[i]
+        coords = coordinates[i]
+
+        feature = {
+            "type": "Feature",
+            "properties": {
+                "headline": headline,
+                "link": url,
+                "text": text  # added the 'text' to the properties
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [coords[1], coords[0]] if coords else [None, None]
+            }
+        }
+        features.append(feature)
+
+    geojson_data = {
+        "type": "FeatureCollection",
+        "features": features
+    }
+
+    # Save the GeoJSON data to a file
+    folder_path = 'geojson_data'
+    os.makedirs(folder_path, exist_ok=True)
+
+    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    file_name = f'{folder_path}/modular_geojson_{current_time}.json'
+
+    with open(file_name, 'w') as f:
+        json.dump(geojson_data, f)
+
+    return geojson_data, file_name
+
+
+    # # Save the updated news data back to the news.json file
+    # with open('news.json', 'w', encoding='utf-8') as f:
+    #     json.dump(news, f, indent=4)
 

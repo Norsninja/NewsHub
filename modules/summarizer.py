@@ -53,11 +53,12 @@ def summarize_articles(categorized_headlines, retries=3, wait_time_seconds=2):
 def organize_summaries_by_category(summaries):
     cat_summaries = {}
     for summary in summaries:
-        headline, category, text, link, timestamp, source = summary
+        headline, category, text, link, timestamp, source, location, coordinates = summary
         if category not in cat_summaries:
             cat_summaries[category] = []
-        cat_summaries[category].append((headline, text, link, timestamp, source))
+        cat_summaries[category].append((headline, text, link, timestamp, source, location, coordinates))
     return cat_summaries
+
 
 
 
@@ -94,7 +95,7 @@ def save_super_summary(super_summary):
 
     # Generate a unique file name based on the current timestamp
     current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    file_name = f'test_super_summary_{current_time}.txt'
+    file_name = f'module_super_summary_{current_time}.txt'
 
     # Save the super summary to the text file with the 'utf-8' encoding
     with open(os.path.join(folder_path, file_name), 'w', encoding='utf-8') as file:
