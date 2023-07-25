@@ -156,11 +156,10 @@ def main():
 
     # Add this after saving the cache
     extracted_locations = locations.extract_locations(summaries)
+    coordinates = locations.get_coordinates(extracted_locations) # Get coordinates
 
     cache_files.save_to_weekly_cache(summaries, weekly_cache_file)
     organized_summaries = summarizer.organize_summaries_by_category(summaries)
-    # Add this after organizing the summaries
-    locations.append_locations_to_news_json(summaries, extracted_locations)
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     super_summary_text = super_summary.get_super_summary()
@@ -190,7 +189,10 @@ def main():
             news_category["summaries"].append(news_summary)
         news["categories"].append(news_category)
 
-    # Save the news data to a JSON file
+    # Add locations and coordinates to the news summaries
+    news = locations.append_locations_to_news_json(news, summaries, extracted_locations, coordinates)
+
+    # Save the updated news data to a JSON file
     with open('news.json', 'w', encoding='utf-8') as f:
         json.dump(news, f, ensure_ascii=False, indent=4)
 

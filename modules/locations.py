@@ -5,6 +5,8 @@ import openai
 import time
 import json
 from tqdm import tqdm
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut
 
 # Import the configuration loader
 from configparser import ConfigParser
@@ -85,11 +87,33 @@ def extract_locations(summaries):
     return locations
 
 
-def append_locations_to_news_json(summaries, locations):
-    # Open the existing news.json file
-    with open('news.json', 'r', encoding='utf-8') as f:
-        news = json.load(f)
+def get_coordinates(locations):
+    geolocator = Nominatim(user_agent="NewsPlanetAi", timeout=10)  # 10 seconds of timeout
+    coordinates = []
+    for location in locations:
+        try:
+            # If location is "None", append None coordinates and continue
+            if location == "None":
+                coordinates.append((None, None))
+                continue
 
+            # Attempt to geocode the location
+            geolocation = geolocator.geocode(location)
+
+            # If geocoding is successful, append the coordinates
+            if geolocation is not None:
+                coordinates.append((geolocation.latitude, geolocation.longitude))
+            else:
+                # If geocoding fails, append None coordinates
+                coordinates.append((None, None))
+
+        except GeocoderTimedOut:
+            print(f"Geocoding timed out for location: {location}. Appending None coordinates.")
+            coordinates.append((None, None))
+
+    return coordinates
+
+def append_locations_to_news_json(news, summaries, locations, coordinates):
     # Iterate over the categories in the news
     for category in news['categories']:
         # Iterate over the summaries in each category
@@ -98,9 +122,13 @@ def append_locations_to_news_json(summaries, locations):
             indices = [i for i, summary in enumerate(summaries) if summary[0] == news_summary['headline']]
             if indices:
                 index = indices[0]
-                # Add the location to the news summary
+                # Add the location and coordinates to the news summary
                 news_summary['location'] = locations[index]
+                news_summary['coordinates'] = coordinates[index]  # Add this line
+    return news
+
 
     # Save the updated news data back to the news.json file
-    with open('news.json', 'w') as f:
+    with open('news.json', 'w', encoding='utf-8') as f:
         json.dump(news, f, indent=4)
+
