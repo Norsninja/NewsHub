@@ -7,6 +7,9 @@ import json
 from tqdm import tqdm
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
+from geopy.exc import GeocoderServiceError
+import time
+
 
 # Import the configuration loader
 from configparser import ConfigParser
@@ -88,32 +91,44 @@ def extract_locations(summaries):
     return locations
 
 
+
+
 def get_coordinates(locations):
     geolocator = Nominatim(user_agent="NewsPlanetAi", timeout=10)  # 10 seconds of timeout
     coordinates = []
     for location in locations:
-        try:
-            # If location is "None", append None coordinates and continue
-            if location == "None":
-                coordinates.append((None, None))
-                continue
+        retries = 3  # number of retries
+        delay = 5  # delay in seconds
+        for i in range(retries):
+            try:
+                # If location is "None", append None coordinates and continue
+                if location == "None":
+                    coordinates.append((None, None))
+                    break
 
-            # Attempt to geocode the location
-            geolocation = geolocator.geocode(location)
+                # Attempt to geocode the location
+                geolocation = geolocator.geocode(location)
 
-            # If geocoding is successful, append the coordinates
-            if geolocation is not None:
-                coordinates.append((geolocation.latitude, geolocation.longitude))
-                print(coordinates)
-            else:
-                # If geocoding fails, append None coordinates
-                coordinates.append((None, None))
+                # If geocoding is successful, append the coordinates
+                if geolocation is not None:
+                    coordinates.append((geolocation.latitude, geolocation.longitude))
+                    break
+                else:
+                    # If geocoding fails, append None coordinates
+                    coordinates.append((None, None))
+                    break
 
-        except GeocoderTimedOut:
-            print(f"Geocoding timed out for location: {location}. Appending None coordinates.")
-            coordinates.append((None, None))
+            except (GeocoderTimedOut, GeocoderServiceError):
+                if i < retries - 1:  # i is zero indexed
+                    time.sleep(delay)  # wait before trying to fetch the data again
+                    print(f"Geocoding timed out for location: {location}. Retrying...")
+                else:
+                    print(f"Geocoding failed for location: {location}. Appending None coordinates.")
+                    coordinates.append((None, None))
+                    break
 
     return coordinates
+
 
 def append_locations_to_news_json(news, summaries, locations, coordinates):
     # Iterate over the categories in the news

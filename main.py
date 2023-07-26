@@ -39,7 +39,36 @@ wait_time_seconds_summarize_super_summary = config.getint('Retry', 'SummarizeSup
 # List of news sources
 sources = [
     ("https://news.google.com/rss/search?q=when:24h+allinurl:apnews.com", 3),
-    ("http://feeds.bbci.co.uk/news/rss.xml", 3)
+    ("http://feeds.bbci.co.uk/news/rss.xml", 3),
+    ("https://rss.jpost.com/rss/rssfeedsfrontpage.aspx", 2),
+    ("https://www.aljazeera.com/xml/rss/all.xml", 3),
+    ("https://www.scmp.com/rss/4/feed", 2),
+    ("https://rss.dw.com/rdf/rss-en-all", 3),
+    ("https://timesofindia.indiatimes.com/rssfeedstopstories.cms", 2),
+    ("https://www.arabnews.com/rss.xml", 2),
+    ("https://mg.co.za/feed/", 2),
+    ("https://batimes.com.ar/feed", 1),
+    ("https://soranews24.com/feed/", 3),
+    ("https://www.japantimes.co.jp/feed", 3),
+    ("https://www.riotimesonline.com/feed/", 3),
+    ("http://feeds.bbci.co.uk/news/world/latin_america/rss.xml", 3),
+    ("https://www.cbc.ca/cmlink/rss-canada",3),
+    ("https://www.allsides.com/rss/news", 3),
+    ("https://www.nationalreview.com/feed/", 5),
+    ("https://rss.upi.com/news/news.rss", 3),
+    ("https://www.politico.com/rss/politicopicks.xml", 5),
+    ("https://www.yahoo.com/news/rss",5),
+    ("https://sports.yahoo.com/rss/", 3),
+    ("https://news.google.com/rss", 5),
+    ("https://www.space.com/feeds/all", 5),
+    ("https://feeds.bloomberg.com/markets/news.rss", 5),
+    ("https://phys.org/rss-feed/breaking/", 5),
+    ("http://feeds.arstechnica.com/arstechnica/index/", 3),
+    ("http://rss.sciam.com/ScientificAmerican-Global", 3),
+    ("https://www.maritime-executive.com/articles.rss", 3),
+    ("https://www.pravda.com.ua/eng/rss/view_news/", 5),
+    ("https://www.themoscowtimes.com/rss/news", 3),
+    ("https://www.understandingwar.org/feeds-publications.xml", 2)
 ]
 
 from modules import scraper
@@ -76,11 +105,11 @@ def main():
         all_headlines = []
 
         # Iterate over the sources
-        for source_url, num_articles in sources:
-            # Scrape headlines from each source
-            source_headlines = scraper.scrape_headlines(source_url, use_tqdm)
-            # Extend the all_headlines list with the headlines from this source
-            all_headlines.extend(source_headlines)
+        for i, (source, num_articles) in enumerate(sources):
+            print(f"Scraping headlines from source {i + 1}/{len(sources)}: {source}")
+            headlines = scraper.scrape_headlines(source, num_articles)
+            all_headlines.extend(headlines)
+            print(f"Finished scraping headlines from source {i + 1}/{len(sources)}: {source}\n")
 
         categorized_headlines = classifier.categorize_headlines(all_headlines)
         summaries = summarizer.summarize_articles(categorized_headlines, retries_summarize_articles, wait_time_seconds_summarize_articles)

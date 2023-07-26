@@ -106,7 +106,7 @@ def save_super_summary(super_summary):
         file.write(super_summary)
 
  
-def summarize_daily_cache(cache_file):
+def summarize_daily_cache(cache_file, batch_size=10):
     print("Summarizing Daily cache with BART")
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Replace '0' with the GPU index you want to use
     # Check if GPU is available and use GPU:0 (if available)
@@ -131,15 +131,14 @@ def summarize_daily_cache(cache_file):
 
         # Summarize each summary individually
         summarized_summaries = []
-        for summary in tqdm(daily_cache, desc="Processing summaries"):
-            # Extract the summary from the tuple
-            text = summary[2]  # index 1 assuming this is where the summary text is in your tuple
+        for i in tqdm(range(0, len(daily_cache), batch_size), desc="Processing summaries"):
+            batch = daily_cache[i:i+batch_size]
+            texts = [summary[2] for summary in batch]  # index 1 assuming this is where the summary text is in your tuple
 
-            # Generate a summary of the summary
-            summary = summarizer(text, max_length=60, min_length=10, do_sample=False)
+            summaries = summarizer(texts, max_length=45, min_length=10, do_sample=False)
 
-            # Add the summary to the list
-            summarized_summaries.append(summary[0]['summary_text'])
+            for summary in summaries:
+                summarized_summaries.append(summary['summary_text'])
 
         return summarized_summaries
     except Exception as e:
