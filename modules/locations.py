@@ -31,6 +31,7 @@ def extract_locations(summaries):
     locations = []
     for summary in tqdm(summaries, desc="Extracting locations"):
         title, category, text, link, timestamp, source = summary
+        print(text)
         for _ in range(3):  # Try the API call up to 3 times
             try:
                 response = openai.ChatCompletion.create(
@@ -52,9 +53,9 @@ def extract_locations(summaries):
                     presence_penalty=0
                 )
                 # If the API call succeeds, exit the loop
-                print(response)
+                
                 location = response['choices'][0]['message']['content'].strip()  # remove leading/trailing spaces
-
+                print(location)
                 if location.lower() == "none":  # Log if None location
                     print(f"Headline: {title} - Location: {location} (none)")
     

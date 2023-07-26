@@ -47,7 +47,7 @@ from modules import classifier
 from modules import summarizer
 from modules import cache_files
 from modules import ftp_uploader
-from modules import super_summary
+from modules import sum_summaries
 from modules import locations
 
 
@@ -100,7 +100,12 @@ def main():
     organized_summaries = summarizer.organize_summaries_by_category(summaries)
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    super_summary_text = super_summary.get_super_summary()
+
+    # Get the summarized summaries from the daily cache
+    summarized_summaries = summarizer.summarize_daily_cache(cache_file)
+
+    # Generate the news broadcast script
+    super_summary_text = sum_summaries.compile_super_summary(summarized_summaries)
 
     # Generate and save JSON
     news = {

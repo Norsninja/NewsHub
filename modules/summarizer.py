@@ -5,6 +5,9 @@ import os
 from modules.errors import robust_api_call
 from tqdm import tqdm
 from modules.scraper import truncate_text, get_full_text
+from transformers import BartForConditionalGeneration, BartTokenizer, pipeline
+import pickle
+import torch
 
 # Load the configuration file
 config = configparser.ConfigParser()
@@ -15,6 +18,7 @@ use_tqdm = config.getboolean('General', 'UseTqdm')
 openai_api_key = config['OPENAI']['OPENAI_API_KEY']
 summarize_articles_model = config['Models']['SummarizeArticles']
 summarize_super_summary_model = config['Models']['SummarizeSuperSummary']
+cache_file = config['Cache']['DailyCacheFile']
 
 openai.api_key = openai_api_key
 
@@ -100,4 +104,43 @@ def save_super_summary(super_summary):
     # Save the super summary to the text file with the 'utf-8' encoding
     with open(os.path.join(folder_path, file_name), 'w', encoding='utf-8') as file:
         file.write(super_summary)
+
  
+def summarize_daily_cache(cache_file):
+    print("Summarizing Daily cache with BART")
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Replace '0' with the GPU index you want to use
+    # Check if GPU is available and use GPU:0 (if available)
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    try:
+        # Check if the cache file exists
+        if not os.path.exists(cache_file):
+            print(f"No cache file found at {cache_file}")
+            return
+
+        # Load the daily cache
+        with open(cache_file, 'rb') as f:
+            daily_cache = pickle.load(f)
+
+        # Initialize the tokenizer and model
+        model_name = 'facebook/bart-large-cnn'
+        tokenizer = BartTokenizer.from_pretrained(model_name)
+        model = BartForConditionalGeneration.from_pretrained(model_name).to(device)
+
+        # Initialize the summarization pipeline
+        summarizer = pipeline('summarization', model=model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
+
+        # Summarize each summary individually
+        summarized_summaries = []
+        for summary in tqdm(daily_cache, desc="Processing summaries"):
+            # Extract the summary from the tuple
+            text = summary[2]  # index 1 assuming this is where the summary text is in your tuple
+
+            # Generate a summary of the summary
+            summary = summarizer(text, max_length=60, min_length=10, do_sample=False)
+
+            # Add the summary to the list
+            summarized_summaries.append(summary[0]['summary_text'])
+
+        return summarized_summaries
+    except Exception as e:
+        print(f"Error while summarizing daily cache: {e}")
