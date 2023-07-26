@@ -1,0 +1,10 @@
+openai
+requests
+beautifulsoup4
+tqdm
+numpy
+pandas
+geopy
+torch
+transformers
+goose3
