@@ -19,6 +19,7 @@ openai_api_key = config['OPENAI']['OPENAI_API_KEY']
 summarize_articles_model = config['Models']['SummarizeArticles']
 summarize_super_summary_model = config['Models']['SummarizeSuperSummary']
 cache_file = config['Cache']['DailyCacheFile']
+categories_order = config.get('Headlines', 'Categories').split(', ')
 
 openai.api_key = openai_api_key
 
@@ -55,12 +56,13 @@ def summarize_articles(categorized_headlines, retries=3, wait_time_seconds=2):
     return summaries
 
 def organize_summaries_by_category(summaries):
-    cat_summaries = {}
+    cat_summaries = {cat: [] for cat in categories_order}
+
     for summary in summaries:
         headline, category, text, link, timestamp, source, location, coordinates = summary
-        if category not in cat_summaries:
-            cat_summaries[category] = []
-        cat_summaries[category].append((headline, text, link, timestamp, source, location, coordinates))
+        if category in cat_summaries:
+            cat_summaries[category].append((headline, text, link, timestamp, source, location, coordinates))
+
     return cat_summaries
 
 

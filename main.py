@@ -38,7 +38,6 @@ retries_summarize_super_summary = config.getint('Retry', 'SummarizeSuperSummaryR
 wait_time_seconds_summarize_super_summary = config.getint('Retry', 'SummarizeSuperSummaryWaitTimeSeconds')
 # List of news sources
 sources = [
-    ("https://news.google.com/rss/search?q=when:24h+allinurl:apnews.com", 3),
     ("http://feeds.bbci.co.uk/news/rss.xml", 3),
     ("https://rss.jpost.com/rss/rssfeedsfrontpage.aspx", 2),
     ("https://www.aljazeera.com/xml/rss/all.xml", 3),

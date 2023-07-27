@@ -83,3 +83,4 @@ weekly_images/
 weekly_scripts/
 .venv/
 modules/__pycache__/
+modules/test_embeddings.py

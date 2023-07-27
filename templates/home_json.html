@@ -109,7 +109,7 @@
 <!-- cut from here -->
     <div class="container mt-4">
 
-        <div id="super-summary-container" style="display: block; margin: 5rem auto 0 auto; width: 80%;">
+        <div id="super-summary-container" style="display: block; margin: 5rem auto 0 auto;">
             <h1>Super Summary</h1>
             <span id="super-summary-excerpt">Let's begin with the Super Summary, your hourly briefing of the day's most significant events:</span>
             <div id="soundcloud-iframe" style="display: none;">
@@ -131,12 +131,14 @@
             <script src="static\js\server_map.js"></script>
             <div id="tooltip" style="position: absolute; opacity: 0;"></div>
         </div>
+
         
 <!--Start News Headlines --> 
         <input type="text" id="search-input" placeholder="Search news..." />
-        <button onclick="performSearch()">Search</button>
         <div id="search-results"></div>
         <script src="static/js/news.js"></script>
+
+        <div id="timestamp-div" style="margin: 1rem auto 0 auto;"></div>
         <div id="content" class="content">
             <!-- content will be dynamically generated -->
         </div>

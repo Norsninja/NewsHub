@@ -3,49 +3,66 @@ fetch('../news.json')
   .then(newsData => {
     // Get reference to main content container
     const contentContainer = document.getElementById('content'); 
+    // Get reference to timestamp container and set its text
+    const timestampDiv = document.getElementById('timestamp-div');
+    timestampDiv.textContent = 'News Updated At: ' + newsData.timestamp;
 
     // Add super summary 
     const superSummaryContainer = document.getElementById('super-summary-container');
     const superSummary = document.getElementById('super-summary');
     superSummary.textContent = newsData.super_summary;
+
+
+
     
     // Get navbar
     const navbar = document.getElementById('dynamic-navbar');
 
     // Loop through each category
     newsData.categories.forEach((category, index) => {
-        // Create navbar item
+      // Create category div
+      const categoryDiv = document.createElement('div');
+      categoryDiv.classList.add('card', 'my-4');
+      categoryDiv.id = category.name.replace(/\s+/g, '-').toLowerCase(); // This line sets the id of the category div
+      // Create navbar item
       const navItem = document.createElement('li');
       navItem.classList.add('nav-item');
 
       // Create navbar link
       const navLink = document.createElement('a');
       navLink.classList.add('nav-link');
-      navLink.href = `#category-${index}`;
+      navLink.href = `#${categoryDiv.id}`;
       navLink.textContent = category.name;
 
       // Append link to item and item to navbar
       navItem.appendChild(navLink);
       navbar.appendChild(navItem);
-
-      // Create category div
-      const categoryDiv = document.createElement('div');
-      categoryDiv.classList.add('card', 'my-4');
-
-      // Add category header
+      
       const categoryHeader = document.createElement('div');
       categoryHeader.classList.add('card-header');
-
+      
       const categoryTitle = document.createElement('h2');
       categoryTitle.textContent = category.name;
-
+      
       categoryHeader.appendChild(categoryTitle);
       categoryDiv.appendChild(categoryHeader);
-
+      
       // Create card body for articles
       const cardBody = document.createElement('div');
       cardBody.classList.add('card-body');
       categoryDiv.appendChild(cardBody);
+      
+      // Make category sections collapsible
+      categoryHeader.addEventListener('click', () => {
+        if (cardBody.style.display === 'block' || cardBody.style.display === '') {
+          cardBody.style.display = 'none';
+        } else {
+          cardBody.style.display = 'block';
+        }
+      });
+      
+      // Initially hide the card body
+      // cardBody.style.display = 'none';
 
       // Loop through articles
       category.summaries.forEach((article, i) => {
@@ -137,10 +154,13 @@ fetch('../news.json')
     });
 });
 document.getElementById('search-input').addEventListener('input', function() {
-    if (!this.value) {
-        document.getElementById('search-results').innerHTML = '';
-    }
+  if (!this.value) {
+      document.getElementById('search-results').innerHTML = '';
+  } else {
+      performSearch();
+  }
 });
+
 
 function performSearch() {
     // Get the user's search query
@@ -170,32 +190,35 @@ function performSearch() {
         .catch(error => console.error('Error:', error));
 }
 function displaySearchResults(searchResults) {
-    // Get the div where the search results will be displayed
-    var resultsDiv = document.getElementById('search-results');
+  // Get the div where the search results will be displayed
+  var resultsDiv = document.getElementById('search-results');
 
-    // Clear any previous search results
-    resultsDiv.innerHTML = '';
+  // Clear any previous search results
+  resultsDiv.innerHTML = '';
 
-    // Iterate over the search results
-    for (var i = 0; i < searchResults.length; i++) {
-        var result = searchResults[i];
+  // Iterate over the search results
+  for (var i = 0; i < searchResults.length; i++) {
+      var result = searchResults[i];
 
-        // Create a new div for this search result
-        var resultDiv = document.createElement('div');
-        resultDiv.className = 'result-div';  // Add a class for styling
+      // Create a new div for this search result
+      var resultDiv = document.createElement('div');
+      resultDiv.className = 'result-div';  // Add a class for styling
 
-        // Create and add the headline and summary to the result div
-        var headlineElement = document.createElement('h2');
-        headlineElement.textContent = result.headline;
-        resultDiv.appendChild(headlineElement);
+      // Create and add the headline and summary to the result div
+      var headlineElement = document.createElement('a');
+      headlineElement.textContent = result.headline;
+      headlineElement.href = result.link;
+      headlineElement.target = '_blank';
+      resultDiv.appendChild(headlineElement);
 
-        var summaryElement = document.createElement('p');
-        summaryElement.textContent = result.summary;
-        resultDiv.appendChild(summaryElement);
+      var summaryElement = document.createElement('p');
+      summaryElement.textContent = result.summary;
+      resultDiv.appendChild(summaryElement);
 
-        // Add the result div to the results div
-        resultsDiv.appendChild(resultDiv);
-    }
+      // Add the result div to the results div
+      resultsDiv.appendChild(resultDiv);
+  }
 }
+
 
 

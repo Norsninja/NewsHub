@@ -141,6 +141,7 @@ body {
         border-radius: 3px;
         font-size: 0.8rem;
         transition: background 0.3s ease;
+        margin: 4px;
     }
     .more-button-summary:hover {
         background: #f2f2f2;
@@ -189,7 +190,7 @@ body {
     }
     
     .content {   
-        margin-top: 60px; 
+        margin-top: 15px; 
         background: #222;
     }
     #subscribeform {
@@ -255,4 +256,44 @@ body {
         outline: none;
         box-shadow: 0 0 0 3px rgba(24, 123, 205, 0.5);
     }
-    
+    #search-input {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        border: none;
+        border-radius: 8px;
+        background-color: #333;
+        font-size: 18px;
+        color: #ddd;
+    }
+
+    #search-input::placeholder {
+        color: #888;
+    }
+
+    #search-results {
+        margin-top: 12px;
+        border-radius: 8px;
+        padding: 20px;
+        background-color: #333;
+        font-size: 18px;
+        color: #ddd;
+        height: auto;
+        overflow: auto;
+    }
+
+    .result-div {
+        border-bottom: 1px solid #888;
+        padding: 12px 0;
+    }
+
+    .result-div h2 {
+        color: #ddd;
+        font-size: 20px;
+    }
+
+    .result-div p {
+        color: #888;
+        font-size: 16px;
+    }
