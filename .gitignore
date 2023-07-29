@@ -84,3 +84,8 @@ weekly_scripts/
 .venv/
 modules/__pycache__/
 modules/test_embeddings.py
+ascii_art.py
+ascii_header.txt
+langchain_super_summary.py
+soundcloud.py
+

@@ -107,6 +107,38 @@ body {
     .summary-full {
         display: none;
     }
+    .top-articles {
+        background-color: #292d31; /* Same background as the card header */
+        color: #ddd; /* For light text */
+        padding: 1rem; /* Some padding */
+        margin-bottom: 1rem; /* Margin at the bottom for spacing */
+        border-radius: 5px; /* Rounded corners */
+        border: 1px solid #444; /* Some border */
+    }
+    
+    .top-articles h2 {
+        margin-bottom: 1rem; /* Some margin below the header */
+    }
+    
+    .top-articles .article {
+        background-color: #333; /* Same background as the card body */
+        padding: 1rem; /* Some padding */
+        margin-bottom: 1rem; /* Some margin at the bottom */
+        border-radius: 5px; /* Rounded corners */
+    }
+    
+    .top-articles .article h5 {
+        margin-bottom: 0.5rem; /* Some margin below the headline */
+    }
+    
+    .top-articles .article .source {
+        margin-bottom: 0.5rem; /* Some margin below the source */
+    }
+    
+    .top-articles .article .text {
+        margin-bottom: 0.5rem; /* Some margin below the summary */
+    }
+    
     .card-header {
         padding: 0.75rem 1.25rem;
         margin-bottom: 0;
@@ -118,6 +150,9 @@ body {
         flex: 1 1 auto;
         min-height: 1px;
         padding: 1.25rem;
+        background-color: #333;
+    }
+    .card {
         background-color: #333;
     }
     .more-button {

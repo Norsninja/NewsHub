@@ -4,7 +4,14 @@ from datetime import datetime
 from flask import Flask, render_template
 import time
 import json
+from sentence_transformers import SentenceTransformer
+import pyfiglet
 
+# Create an ASCII header
+header = pyfiglet.figlet_format("NewsPlanetAi")
+
+print(header)
+print("Loading Configs")
 # Load the configuration file
 config = configparser.ConfigParser()
 config.read('modules/suite_config.ini')
@@ -31,6 +38,11 @@ use_tqdm = config.getboolean('General', 'UseTqdm')
 
 model_categorize_headlines = config['Models']['CategorizeHeadlines']
 model_summarize_super_summary = config['Models']['SummarizeSuperSummary']
+SimilarityModel = config['Models']['SimilarityModel']
+
+# Thresholds
+SIMILARITY_THRESHOLD = config.getfloat('THRESHOLDS', 'SIMILARITY_THRESHOLD')
+TOP_N_ARTICLES = config.getint('THRESHOLDS', 'TOP_N_ARTICLES')
 
 retries_summarize_articles = config.getint('Retry', 'SummarizeArticlesRetries')
 wait_time_seconds_summarize_articles = config.getint('Retry', 'SummarizeArticlesWaitTimeSeconds')
@@ -77,6 +89,7 @@ from modules import cache_files
 from modules import ftp_uploader
 from modules import sum_summaries
 from modules import locations
+from modules import similarity
 
 
 app = Flask(__name__)
@@ -90,6 +103,7 @@ def format_datetime(value, fmt='%Y-%m-%d %H:%M:%S'):
 app.jinja_env.filters['strftime'] = format_datetime
 
 def main():
+    print("Running NewsPlanetAi System...")
     if not os.path.exists(cache_directory):
         os.makedirs(cache_directory)
 
@@ -113,6 +127,14 @@ def main():
         categorized_headlines = classifier.categorize_headlines(all_headlines)
         summaries = summarizer.summarize_articles(categorized_headlines, retries_summarize_articles, wait_time_seconds_summarize_articles)
         cache_files.save_cache(cache_file, summaries)
+
+    # Generate top articles by category
+    print("Grouping summaries by category")
+    summaries_by_categories = similarity.group_by_category(summaries)
+    print("Loading model")
+    model = SentenceTransformer(SimilarityModel)
+    print("Generating top articles by category")
+    top_articles_by_category = similarity.generate_top_articles_by_category(summaries_by_categories, model, SIMILARITY_THRESHOLD, TOP_N_ARTICLES)
 
     # Extract locations and get coordinates
     extracted_locations = locations.extract_locations(summaries)
@@ -155,10 +177,20 @@ def main():
                 "timestamp": format_datetime(summary[3]),
                 "source": summary[4],
                 "location": summary[5] if summary[5] is not None else "None",
-                "coordinates": list(summary[6]) if summary[6] is not None else [None, None]
+                "coordinates": list(summary[6]) if summary[6] is not None else [None, None],
+                "top_headline": False  # Default value
             }
+
+            # Check if the summary is a top article
+            if category in top_articles_by_category:
+                for top_article in top_articles_by_category[category]:
+                    if summary[0] == top_article[0][0]:  # Compare headlines
+                        news_summary["top_headline"] = True
+                        break
+
             news_category["summaries"].append(news_summary)
         news["categories"].append(news_category)
+
 
     # Save the updated news data to a JSON file
     with open('news.json', 'w', encoding='utf-8') as f:

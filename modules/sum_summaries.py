@@ -1,8 +1,10 @@
 
 import configparser
 import os
+import glob
 import openai
 from datetime import datetime
+from modules.summarizer import summarize_super_summary
 from modules.errors import robust_api_call
 config = configparser.ConfigParser()
 config.read('modules/suite_config.ini')
@@ -10,6 +12,14 @@ config.read('modules/suite_config.ini')
 
 
 super_summary_model = config['Models']['GetSuperSummary']
+
+
+def get_latest_super_summary_file(directory):
+    list_of_files = glob.glob(f"{directory}/modular_super_summary_*.txt")
+    if not list_of_files:
+        return None
+    latest_file = max(list_of_files, key=os.path.getctime)
+    return latest_file
 
 def compile_prompt(summarized_summaries):
     print("compiling prompt")
@@ -22,8 +32,8 @@ def compile_prompt(summarized_summaries):
 
     try:
         prompt = ""
-        for summary in summarized_summaries:
-            prompt += f"Summary:\n{summary}\n\n"
+        for headline, summary in summarized_summaries:
+            prompt += f"{headline}:\n{summary}\n\n"
         return prompt
     except Exception as e:
         print(f"Error while compiling prompt: {e}")
@@ -57,6 +67,12 @@ def generate_gpt_completion(prompt, api_key, model=super_summary_model, max_toke
     # Format the current time as a string
     current_time_str = current_time.strftime("%Y-%m-%d %H:%M:%S")
     openai.api_key = api_key
+    latest_file_path = get_latest_super_summary_file("super_summaries")
+    if latest_file_path:
+        with open(latest_file_path, 'r', encoding='utf-8') as file:
+            latest_super_summary_content = file.read()
+        latest_super_summary_text = summarize_super_summary(latest_super_summary_content)
+        prompt.append((". Moving on to the summary of previous events:", "", latest_super_summary_text, "", "", "")) 
     try:
         response = robust_api_call(lambda: openai.ChatCompletion.create(
             model=model,

@@ -154,8 +154,8 @@ def generate_newsletter(top_articles_by_category: Dict[str, List[Tuple]]) -> str
         <div class="container">
         <h1 style="font-family: Arial, sans-serif; color: #333;">Daily Briefing with Cortex</h1>
         <div style="text-align: center; background-color: #3da0ae; color: #ffffff; padding: 10px; border-radius: 5px;">
-            <h2 style="margin: 0;">Daily Briefing - July 27, 2023 - NewsPlanetAi</h2>
-            <a href="https://soundcloud.com/norsninja/daily-briefing-july-27-2023-830-am-newsplanetai?si=5c97e53b00ea4f7e81d1a460126db291&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing" target="_blank" style="color: #ffffff; text-decoration: none; display: inline-block; margin-top: 10px; padding: 10px 20px; background-color: #ffffff; color: #3da0ae; border-radius: 20px;">Listen on SoundCloud</a>
+            <h2 style="margin: 0;">Daily Briefing - July 28, 2023 - NewsPlanetAi</h2>
+            <a href="https://soundcloud.com/norsninja/daily-briefing-july-28-2023-830-am?si=b9c11f546ce245b4ad61301afade6303&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing" target="_blank" style="color: #ffffff; text-decoration: none; display: inline-block; margin-top: 10px; padding: 10px 20px; background-color: #ffffff; color: #3da0ae; border-radius: 20px;">Listen on SoundCloud</a>
         </div>
         <hr style="border: 0; height: 1px; background: #333; margin-top: 2em; margin-bottom: 2em;">
 

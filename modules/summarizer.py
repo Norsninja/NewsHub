@@ -134,13 +134,14 @@ def summarize_daily_cache(cache_file, batch_size=10):
         # Summarize each summary individually
         summarized_summaries = []
         for i in tqdm(range(0, len(daily_cache), batch_size), desc="Processing summaries"):
-            batch = daily_cache[i:i+batch_size]
-            texts = [summary[2] for summary in batch]  # index 1 assuming this is where the summary text is in your tuple
+                batch = daily_cache[i:i+batch_size]
+                headlines = [summary[0] for summary in batch]  # assuming the headline is at index 0
+                texts = [summary[2] for summary in batch]  # assuming the summary is at index 2
 
-            summaries = summarizer(texts, max_length=45, min_length=10, do_sample=False)
+                summaries = summarizer(texts, max_length=45, min_length=10, do_sample=False)
 
-            for summary in summaries:
-                summarized_summaries.append(summary['summary_text'])
+                for j, summary in enumerate(summaries):
+                    summarized_summaries.append((headlines[j], summary['summary_text']))
 
         return summarized_summaries
     except Exception as e:

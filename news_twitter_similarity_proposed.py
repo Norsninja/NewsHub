@@ -80,13 +80,13 @@ def generate_engaging_tweet(headline: str, summary: str, url: str) -> str:
         },
         {
             "role": "user",
-            "content": f"Please turn this into a tweet that MUST be less than 200 characters including the hashtags:\nHeadline: {headline}\nSummary: {summary}\nURL: NewsPlanetAi.com"
+            "content": f"Please summarize and turn this article into a tweet, that MUST be less than 200 characters long, including the hashtags:\nHeadline: {headline}\nSummary: {summary}\nURL: NewsPlanetAi.com"
         }
     ]
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=messages,
-        temperature=0.5,
+        temperature=0.8,
         max_tokens=60
     )
     tweet = response['choices'][0]['message']['content']
