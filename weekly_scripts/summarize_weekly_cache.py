@@ -4,6 +4,7 @@ import os
 from tqdm import tqdm
 import json
 import torch
+from datetime import datetime
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Replace '0' with the GPU index you want to use
 # Check if GPU is available and use GPU:0 (if available)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -94,6 +95,33 @@ def summarize_day_summaries(summaries, max_length=300, min_length=200, model_nam
 
     return summary
 
+def save_to_monthly_cache(summarized_summaries, cache_file='cache/modular_monthly_cache.pkl'):
+    try:
+        # Load the existing cache or create a new one if it doesn't exist
+        if os.path.exists(cache_file):
+            with open(cache_file, 'rb') as f:
+                monthly_cache = pickle.load(f)
+        else:
+            monthly_cache = {}
+
+        # Get the current year, month, and week number
+        today = datetime.now()
+        current_year_month_week = today.strftime('%Y-%m-W%W')
+
+        # Check if the current year-month-week's data already exists in the cache
+        if current_year_month_week not in monthly_cache:
+            # Create a new entry for this year-month-week
+            monthly_cache[current_year_month_week] = summarized_summaries
+
+        # Save the cache
+        with open(cache_file, 'wb') as f:
+            pickle.dump(monthly_cache, f)
+
+    except Exception as e:
+        print(f"Error while saving to monthly cache: {e}")
+
+
+
 
 def main():
     summarized_summaries = summarize_weekly_cache()
@@ -107,8 +135,12 @@ def main():
     with open('weekly_scripts/final_weekly_summaries.json', 'w', encoding='utf-8') as f:
         json.dump(summarized_summaries, f, indent=4, ensure_ascii=False)
 
+    # Append the summarized summaries to the monthly cache
+    save_to_monthly_cache(summarized_summaries)
+
 if __name__ == "__main__":
     main()
+
 
 
 

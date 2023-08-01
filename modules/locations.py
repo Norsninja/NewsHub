@@ -29,7 +29,7 @@ def extract_locations(summaries):
             cache_time, locations = pickle.load(f)
         
         # If the cache is less than an hour old - return the cached data
-        if (datetime.now() - cache_time).total_seconds() < 7200:
+        if (datetime.now() - cache_time).total_seconds() < 21600: # 6 hours
             return locations
     locations = []
     for summary in tqdm(summaries, desc="Extracting locations"):

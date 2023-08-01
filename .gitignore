@@ -89,3 +89,9 @@ ascii_header.txt
 langchain_super_summary.py
 soundcloud.py
 
+query_cache_nlp.py
+plot_article_trend
+query_cache.py
+query_embeddings.py
+scrape_testing.py
+upload_refined_script.py

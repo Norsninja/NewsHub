@@ -151,11 +151,17 @@ def main():
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    # Convert top_articles_by_category into a list of tuples
+    top_articles_list = [(headline, summary) for category_articles in top_articles_by_category.values() for (headline, summary, *_) in category_articles]
+
+    # Select only the first top article from all categories
+    top_article_for_gpt = [top_articles_list[0]] if top_articles_list else []
+
     # Get the summarized summaries from the daily cache
     summarized_summaries = summarizer.summarize_daily_cache(cache_file)
 
     # Generate the news broadcast script
-    super_summary_text = sum_summaries.compile_super_summary(summarized_summaries)
+    super_summary_text = sum_summaries.get_or_generate_super_summary(top_article_for_gpt, summarized_summaries)
 
     # Generate and save JSON
     news = {
@@ -195,10 +201,10 @@ def main():
     # Save the updated news data to a JSON file
     with open('news.json', 'w', encoding='utf-8') as f:
         json.dump(news, f, ensure_ascii=False, indent=4)
-
+    ftp_map_directory = "/public_html/static"
     # Upload the JSON file to the server
     ftp_uploader.upload_to_ftp('news.json', ftp_host, ftp_user, ftp_password, ftp_directory, 'news.json')
-    ftp_uploader.upload_to_ftp(geojson_file_name, ftp_host, ftp_user, ftp_password, ftp_directory, 'modular_geojson.json')
+    ftp_uploader.upload_to_ftp(geojson_file_name, ftp_host, ftp_user, ftp_password, ftp_map_directory, 'geojson_data.json')
 
 
     # Return the generated news data

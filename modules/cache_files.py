@@ -39,3 +39,6 @@ def save_to_weekly_cache(summaries, cache_file='cache/modular_weekly_cache.pkl')
                 
     except Exception as e:
         print(f"Error while saving to weekly cache: {e}")
+
+# Proposed Monthly Cache
+# in summarize weekly cache file

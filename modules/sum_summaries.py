@@ -3,7 +3,7 @@ import configparser
 import os
 import glob
 import openai
-from datetime import datetime
+from datetime import datetime, timedelta
 from modules.summarizer import summarize_super_summary
 from modules.errors import robust_api_call
 config = configparser.ConfigParser()
@@ -21,19 +21,26 @@ def get_latest_super_summary_file(directory):
     latest_file = max(list_of_files, key=os.path.getctime)
     return latest_file
 
-def compile_prompt(summarized_summaries):
+def compile_prompt(top_articles, summarized_summaries):
     print("compiling prompt")
     """
-    Compile the summarized summaries into a GPT prompt.
+    Compile the top articles and summarized summaries into a GPT prompt.
     """
-    if not summarized_summaries:
+    if not top_articles and not summarized_summaries:
         print("No data to compile")
         return None
 
     try:
         prompt = ""
+        if top_articles:
+            prompt += "Top Articles:\n\n"
+            for headline, summary in top_articles:
+                prompt += f"{headline}:\n{summary}\n\n"
+
+        prompt += "\n\nSummarized Summaries:\n\n"
         for headline, summary in summarized_summaries:
             prompt += f"{headline}:\n{summary}\n\n"
+            
         return prompt
     except Exception as e:
         print(f"Error while compiling prompt: {e}")
@@ -83,21 +90,21 @@ def generate_gpt_completion(prompt, api_key, model=super_summary_model, max_toke
                         "You are a cutting-edge AI assistant named 'Cortex', tasked with crafting a professional news broadcast titled, 'NewsPlanetAI', a highly trusted news program. "
                         "Your mission is to summarize the hour's global events in an authoritative and balanced manner. Here are the components of your task:\n\n"
                         "1. Cortex starts the program, introducing NewsPlanetAI and the day's broadcast in a creative, engaging manner.\n\n"
-                        "2. 'The World Watches': This section is committed to detailed coverage of the day's most pressing global issue. Currently, that is the Russia & Ukraine conflict. "
-                        "You will present a summary of the day's developments, key events, and an impartial analysis of the situation.\n\n"
+                        "2. 'The World Watches': This section is committed to detailed coverage of the day's most pressing global issue.  " # Currently, that is the Russia & Ukraine conflict.
+                        "You will present a summary of the day's developments, salient events, and an impartial analysis of the situation.\n\n"
                         "3. 'Global Gist': This part provides a comprehensive, yet brief overview of the day's worldwide happenings, including key events.\n\n"
                         "4. 'Insight Analytica': This part delves into the implications and potential impact of the notable occurrences from the day. "
                         "The aim is to maintain neutrality while providing an insightful discussion.\n\n"
                         "5. 'Regional Rundown': Here, you'll focus on pertinent details from different geographical regions. Each significant regional event is identified, "
                         "its importance elucidated, and its implications underscored.\n\n"
                         "6. 'Social Soundbar': This engaging section encourages audience interaction by introducing daily polls, posing questions, or asking for comments "
-                        "related to interesting stories in the day's news (avoid using the Russia-Ukraine War in this section, stick to specific unique stories).\n\n"
+                        "related to interesting stories in the day's news.\n\n"
                         "7. Cortex concludes the broadcast in a unique and thoughtful way."
                     ),
                 },
                 {
                     "role": "user",
-                    "content": f"The summaries for this hour's ({current_time_str}) events are: {prompt}. Please craft the hourly news broadcast as per the instructions provided in one complete response (500 words Max). Thank you.",
+                    "content": f"The summaries for this hour's ({current_time_str}) events are: {prompt}. Please craft the hourly news broadcast as per the instructions provided in one complete response (500 words Minimum). Thank you.",
                 },
             ],
             max_tokens=max_tokens,
@@ -112,10 +119,40 @@ def generate_gpt_completion(prompt, api_key, model=super_summary_model, max_toke
         print(f"Error while generating GPT completion: {e}")
         return None
 
+def get_or_generate_super_summary(top_article_for_gpt, summarized_summaries):
+    # Get the most recent file in the 'super_summaries' directory that starts with 'modular_daily_script_'
+    try:
+        file_list = [file for file in os.listdir('super_summaries') if file.startswith('modular_daily_script_')]
+        latest_file = max(file_list, key=lambda x: os.path.getmtime(os.path.join('super_summaries', x)))
+    except ValueError:
+        latest_file = None
+
+    # Check if a super summary has been created within the last 2 hours
+    if latest_file:
+        # Extract the timestamp from the file name
+        latest_file_time_str = latest_file.replace('modular_daily_script_', '').replace('.txt', '')
+        latest_file_time = datetime.strptime(latest_file_time_str, "%Y-%m-%d_%H-%M-%S")
+        if datetime.now() - latest_file_time < timedelta(hours=2):
+            print("Loading the most recent super summary...")
+            # Load the most recent super summary, skip the header
+            with open(os.path.join('super_summaries', latest_file), 'r', encoding='utf-8') as f:
+                # Skip the header line
+                next(f)
+                super_summary_text = f.read()
+        else:
+            print("Generating a new super summary...")
+            # Generate a new super summary
+            super_summary_text = compile_super_summary(top_article_for_gpt, summarized_summaries)
+    else:
+        print("Generating a new super summary...")
+        # Generate a new super summary
+        super_summary_text = compile_super_summary(top_article_for_gpt, summarized_summaries)
+
+    return super_summary_text
     
-def compile_super_summary(summarized_summaries):
+def compile_super_summary(top_articles, summarized_summaries):
     # Compile the GPT prompt
-    prompt = compile_prompt(summarized_summaries)
+    prompt = compile_prompt(top_articles, summarized_summaries)
     print("Compiled Prompt:")
     print(prompt)
 
@@ -134,12 +171,13 @@ def compile_super_summary(summarized_summaries):
         print("Error: Failed to generate GPT completion")
         return None
 
-    # Get today's date
-    today = datetime.today().strftime('%Y-%m-%d')  # format the date as 'YYYY-MM-DD'
+    # Generate a unique file name based on the current timestamp
+    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     # Save the prompt to a file
-    with open(f'super_summaries/modular_daily_script_{today}.txt', 'w', encoding='utf-8') as f:
-        f.write(f"Super Summary for {today}:\n")
+    with open(f'super_summaries/modular_daily_script_{current_time}.txt', 'w', encoding='utf-8') as f:
+        f.write(f"Super Summary for {current_time}:\n")
         f.write(compiled_super_summary + "\n")
 
     return compiled_super_summary
+

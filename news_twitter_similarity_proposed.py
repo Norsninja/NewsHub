@@ -108,7 +108,7 @@ def post_tweet(tweet: str):
 def main():
     # Load and preprocess data
     print("Loading and preprocessing data")
-    summaries = load_data('cache/summaries.p')
+    summaries = load_data('cache/module_summaries.p')
 
     # Load model
     print("Loading model")

@@ -184,14 +184,8 @@ fetch('../news.json')
         } else {
           cardBody.style.display = 'block';
         }
-      });
-  
-      // Loop through articles
-      category.summaries.forEach((article, i) => {
-        const articleDiv = createArticleDiv(article, i);
-        cardBody.appendChild(articleDiv);
-      });
-  
+      });  
+ 
       contentContainer.appendChild(categoryDiv);
     });
     // Append topArticlesSection to the contentContainer
