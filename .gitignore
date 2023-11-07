@@ -117,3 +117,4 @@ russo_ukranian_war.txt
 .langchain.db
 misc_scripts/NewsQuery/__pycache__
 static/radar_chart.png
+misc_scripts/scrape_daily_report_and_telegram_wiki.py
