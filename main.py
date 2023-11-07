@@ -51,7 +51,7 @@ wait_time_seconds_summarize_super_summary = config.getint('Retry', 'SummarizeSup
 # List of news sources
 sources = [
     ("http://feeds.bbci.co.uk/news/rss.xml", 3),
-    ("https://rss.jpost.com/rss/rssfeedsfrontpage.aspx", 2),
+    ("https://rss.jpost.com/rss/rssfeedsfrontpage.aspx", 3),
     ("https://www.aljazeera.com/xml/rss/all.xml", 3),
     ("https://www.scmp.com/rss/4/feed", 2),
     ("https://rss.dw.com/rdf/rss-en-all", 3),
@@ -59,7 +59,7 @@ sources = [
     ("https://www.arabnews.com/rss.xml", 2),
     ("https://mg.co.za/feed/", 2),
     ("https://batimes.com.ar/feed", 1),
-    ("https://soranews24.com/feed/", 3),
+    ("https://soranews24.com/feed/", 2),
     ("https://www.japantimes.co.jp/feed", 3),
     ("https://www.riotimesonline.com/feed/", 3),
     ("http://feeds.bbci.co.uk/news/world/latin_america/rss.xml", 3),
@@ -138,15 +138,25 @@ def main():
 
     # Extract locations and get coordinates
     extracted_locations = locations.extract_locations(summaries)
+    print(len(summaries))
     coordinates = locations.get_coordinates(extracted_locations) # Get coordinates
+    print(len(extracted_locations))
     geojson_data, geojson_file_name = locations.generate_geojson(summaries, extracted_locations, coordinates)
+    print(len(coordinates))
 
 
     # Attach locations and coordinates to each summary
     for i in range(len(summaries)):
-        summaries[i] = summaries[i] + (extracted_locations[i], coordinates[i])
+        if i < len(extracted_locations) and i < len(coordinates):
+            summaries[i] = summaries[i] + (extracted_locations[i], coordinates[i])
+        else:
+            print(f"Missing data for summary {i}. Appending None for location and coordinates.")
+            summaries[i] = summaries[i] + (None, None)  # Append None for missing data
 
+
+    print("Before saving to weekly cache")
     cache_files.save_to_weekly_cache(summaries, weekly_cache_file)
+    print("After saving to weekly cache")
     organized_summaries = summarizer.organize_summaries_by_category(summaries)
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

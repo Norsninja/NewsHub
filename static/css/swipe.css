@@ -1,0 +1,192 @@
+.hidden {
+    display: none;
+}
+/* :root {
+    --current-category-color1: var(--default-color1);
+    --current-category-color2: var(--default-color2);
+} */
+
+/* :root {
+    --world-news-color1: #1E90FF;
+    --world-news-color2: #104E8B;
+    --us-news-color1: #FF4500;
+    --us-news-color2: #8B2500;
+    --economy-finance-color1: #32CD32;
+    --economy-finance-color2: #228B22;
+    --health-environment-color1: #8A2BE2;
+    --health-environment-color2: #551A8B;
+    --science-research-color1: #FFD700;
+    --science-research-color2: #8B7500;
+    --space-color1: #87CEEB;
+    --space-color2: #4A708B;
+    --technology-innovation-color1: #FF69B4;
+    --technology-innovation-color2: #8B3A62;
+    --society-culture-color1: #CD853F;
+    --society-culture-color2: #8B4513;
+    --sports-color1: #7CFC00;
+    --sports-color2: #437200;
+    --law-crime-color1: #DC143C;
+    --law-crime-color2: #8B0A50;
+    --russia-ukraine-conflict-color1: #000080;
+    --russia-ukraine-conflict-color2: #000040;
+    --default-color1: #39464D;
+    --default-color2: #1B1B1B;
+  }
+  .article-card.world-news {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><linearGradient id="gradient" gradientTransform="rotate(45)"><stop offset="0%" stop-color="var(--world-news-color1)"/><stop offset="100%" stop-color="var(--world-news-color2)"/></linearGradient><polygon points="0,0 100,0 100,100" fill="url(%23gradient)"/></svg>') no-repeat center center;
+    background-size: cover;
+  }
+  
+  .article-card.us-news {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><linearGradient id="gradient" gradientTransform="rotate(45)"><stop offset="0%" stop-color="var(--us-news-color1)"/><stop offset="100%" stop-color="var(--us-news-color2)"/></linearGradient><polygon points="0,0 100,0 100,100" fill="url(%23gradient)"/></svg>') no-repeat center center;
+    background-size: cover;
+  }
+  .article-card.economy-finance {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><linearGradient id="gradient" gradientTransform="rotate(45)"><stop offset="0%" stop-color="var(--economy-finance-color1)"/><stop offset="100%" stop-color="var(--economy-finance-color2)"/></linearGradient><polygon points="0,0 100,0 100,100" fill="url(%23gradient)"/></svg>') no-repeat center center;
+    background-size: cover;
+  }
+  
+  .article-card.health-environment {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><linearGradient id="gradient" gradientTransform="rotate(45)"><stop offset="0%" stop-color="var(--health-environment-color1)"/><stop offset="100%" stop-color="var(--health-environment-color2)"/></linearGradient><polygon points="0,0 100,0 100,100" fill="url(%23gradient)"/></svg>') no-repeat center center;
+    background-size: cover;
+  }
+  .article-card.science-research {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><linearGradient id="gradient" gradientTransform="rotate(45)"><stop offset="0%" stop-color="var(--science-research-color1)"/><stop offset="100%" stop-color="var(--science-research-color2)"/></linearGradient><polygon points="0,0 100,0 100,100" fill="url(%23gradient)"/></svg>') no-repeat center center;
+    background-size: cover;
+  }
+  
+  .article-card.space {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><linearGradient id="gradient" gradientTransform="rotate(45)"><stop offset="0%" stop-color="var(--space-color1)"/><stop offset="100%" stop-color="var(--space-color2)"/></linearGradient><polygon points="0,0 100,0 100,100" fill="url(%23gradient)"/></svg>') no-repeat center center;
+    background-size: cover;  
+  }
+  
+  .article-card.technology-innovation {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><linearGradient id="gradient" gradientTransform="rotate(45)"><stop offset="0%" stop-color="var(--technology-innovation-color1)"/><stop offset="100%" stop-color="var(--technology-innovation-color2)"/></linearGradient><polygon points="0,0 100,0 100,100" fill="url(%23gradient)"/></svg>') no-repeat center center;
+    background-size: cover;
+  }
+  .article-card.society-culture {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><linearGradient id="gradient" gradientTransform="rotate(45)"><stop offset="0%" stop-color="var(--society-culture-color1)"/><stop offset="100%" stop-color="var(--society-culture-color2)"/></linearGradient><polygon points="0,0 100,0 100,100" fill="url(%23gradient)"/></svg>') no-repeat center center;
+    background-size: cover;
+  }
+  .article-card.sports {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><linearGradient id="gradient" gradientTransform="rotate(45)"><stop offset="0%" stop-color="var(--sports-color1)"/><stop offset="100%" stop-color="var(--sports-color2)"/></linearGradient><polygon points="0,0 100,0 100,100" fill="url(%23gradient)"/></svg>') no-repeat center center;
+    background-size: cover;
+  }
+  .article-card.law-crime {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><linearGradient id="gradient" gradientTransform="rotate(45)"><stop offset="0%" stop-color="var(--law-crime-color1)"/><stop offset="100%" stop-color="var(--law-crime-color2)"/></linearGradient><polygon points="0,0 100,0 100,100" fill="url(%23gradient)"/></svg>') no-repeat center center;
+    background-size: cover;
+  }
+  .article-card.russia-ukraine-conflict {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><linearGradient id="gradient" gradientTransform="rotate(45)"><stop offset="0%" stop-color="var(--russia-ukraine-conflict-color1)"/><stop offset="100%" stop-color="var(--russia-ukraine-conflict-color2)"/></linearGradient><polygon points="0,0 100,0 100,100" fill="url(%23gradient)"/></svg>') no-repeat center center;
+    background-size: cover; 
+  } */
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  font-family: Arial, sans-serif; /* Optional: Set a default font-family */
+  width: -webkit-fill-available;
+}
+body {
+    font-family: Arial, sans-serif;
+    color: #ddd;
+    background: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    position: fixed;
+}
+header {
+  text-align: center;
+  max-width: 340px;
+}
+
+.article-card {
+    /* background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><linearGradient id="gradient" gradientTransform="rotate(45)"><stop offset="0%" stop-color="var(--current-category-color1)"/><stop offset="100%" stop-color="var(--current-category-color2)"/></linearGradient><polygon points="0,0 100,0 100,100" fill="url(%23gradient)"/></svg>') no-repeat center center; */
+    background-size: cover;
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 0px;
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0px 8px 16px 0 rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+    transition: all 0.5s ease-out;
+    overflow-x: hidden;
+    
+}
+
+
+.article-card.hidden {
+    display: none;
+}
+.article-card .hidden {
+    display: none;
+}
+
+
+.article-card h2 {
+    color: #343243;
+    font-size: 1.5rem;
+    margin: 5px 0;
+    background-color: rgb(255 255 255 / 87%);
+    border-radius: 4px;  /* Reduced vertical margin */
+    max-width: 90%;
+    cursor: pointer;
+}
+
+.article-card p {
+  color: #343243;
+  font-size: 1rem;
+  margin: 5px 0;
+  background-color: rgb(255 255 255 / 87%);
+  border-radius: 4px;
+}
+
+.article-card p.timestamp {
+  color: #343243;
+    font-size: 0.9rem;
+}
+.article-card a {
+    color: #1e90ff;
+    text-decoration: none;
+    margin-top: 10px;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+.article-card a:hover {
+    color: #1e90ff;
+    text-decoration: underline;
+}
+
+
+#next-button {
+    background-color: #292d31;
+    color: #ddd;
+    border: 1px solid #444;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    position: relative;
+    bottom: 20px;
+}
+
+#next-button:hover {
+    background-color: #1e90ff;
+}
+#category-select {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+}

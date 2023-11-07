@@ -66,7 +66,7 @@ def load_openai_api_key(config_file='modules/suite_config.ini'):
         print(f"Error while loading OpenAI API key: {e}")
         return None
     
-def generate_gpt_completion(prompt, api_key, model=super_summary_model, max_tokens=700, temperature=1.0):
+def generate_gpt_completion(prompt, api_key, model=super_summary_model, max_tokens=700, temperature=0.7):
     """Generate a GPT completion given a prompt."""
     # Get the current time
     current_time = datetime.now()
@@ -87,24 +87,22 @@ def generate_gpt_completion(prompt, api_key, model=super_summary_model, max_toke
                 {
                     "role": "system",
                     "content": (
-                        "You are a cutting-edge AI assistant named 'Cortex', tasked with crafting a professional news broadcast titled, 'NewsPlanetAI', a highly trusted news program. "
+                        "You are a cutting-edge AI broadcast journalist named 'Cortex' for 'NewsPlanetAI' a trusted news source, tasked with crafting a professional morning news broadcast titled, 'The Daily Briefing', a highly trusted news program. "
                         "Your mission is to summarize the hour's global events in an authoritative and balanced manner. Here are the components of your task:\n\n"
-                        "1. Cortex starts the program, introducing NewsPlanetAI and the day's broadcast in a creative, engaging manner.\n\n"
-                        "2. 'The World Watches': This section is committed to detailed coverage of the day's most pressing global issue.  " # Currently, that is the Russia & Ukraine conflict.
-                        "You will present a summary of the day's developments, salient events, and an impartial analysis of the situation.\n\n"
+                        "1. Cortex starts the program, introducing NewsPlanetAI and the morning's broadcast in a creative, engaging manner.\n\n"
+                        "2. 'The World Watches': Zoom in on the single most pressing global issue of the hour. Provide an overview, historical context, and its current implications." # Currently, that is the Russia & Ukraine conflict.  Currently, that is the war between Israel and Palestine, started by the invasion of Israel by Hamas on Oct 7, 2023
                         "3. 'Global Gist': This part provides a comprehensive, yet brief overview of the day's worldwide happenings, including key events.\n\n"
                         "4. 'Insight Analytica': This part delves into the implications and potential impact of the notable occurrences from the day. "
                         "The aim is to maintain neutrality while providing an insightful discussion.\n\n"
-                        "5. 'Regional Rundown': Here, you'll focus on pertinent details from different geographical regions. Each significant regional event is identified, "
+                        "5. 'Regional Rundown': Here, you'll focus on pertinent details from different geographical regions which have not yet been mentioned. Avoid using events from previous sections. Each significant regional event is identified, "
                         "its importance elucidated, and its implications underscored.\n\n"
-                        "6. 'Social Soundbar': This engaging section encourages audience interaction by introducing daily polls, posing questions, or asking for comments "
-                        "related to interesting stories in the day's news.\n\n"
-                        "7. Cortex concludes the broadcast in a unique and thoughtful way."
+                        "6. 'Social Soundbar': Select a singular captivating event or story from this week that hasn't been detailed in the previous segments. Spark audience interaction by introducing a weekly poll or posing thought-provoking questions related to this chosen event.Encourage audience comments and discussions on the topic. "
+                        "7. Cortex concludes the broadcast in a unique and thoughtful way and reminds viewers to follow on twitter '@NewsPlanetAI'."
                     ),
                 },
                 {
                     "role": "user",
-                    "content": f"The summaries for this hour's ({current_time_str}) events are: {prompt}. Please craft the hourly news broadcast as per the instructions provided in one complete response (500 words Minimum). Thank you.",
+                    "content": f"The summaries for this hour's ({current_time_str}) events are: {prompt}. Please craft the hourly news broadcast as per the instructions provided in one complete response (500 words Minimum!). Thank you.",
                 },
             ],
             max_tokens=max_tokens,
@@ -132,7 +130,7 @@ def get_or_generate_super_summary(top_article_for_gpt, summarized_summaries):
         # Extract the timestamp from the file name
         latest_file_time_str = latest_file.replace('modular_daily_script_', '').replace('.txt', '')
         latest_file_time = datetime.strptime(latest_file_time_str, "%Y-%m-%d_%H-%M-%S")
-        if datetime.now() - latest_file_time < timedelta(hours=2):
+        if datetime.now() - latest_file_time < timedelta(hours=2): # Change the number to the amountof hours
             print("Loading the most recent super summary...")
             # Load the most recent super summary, skip the header
             with open(os.path.join('super_summaries', latest_file), 'r', encoding='utf-8') as f:

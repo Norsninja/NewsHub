@@ -89,7 +89,7 @@ def generate_gpt_completion(prompt, api_key, model="gpt-4", max_tokens=1500, tem
 
                     {
                         "role": "user", 
-                        "content": f"The summaries of this week's events are: {prompt}. \n\nPlease craft the weekly news broadcast for {today} as per the instructions provided in one complete response in at least 800 words. Thank you."
+                        "content": f"The summaries of this week's events are: {prompt}. \n\nPlease craft the weekly news broadcast for {today} as per the instructions provided in one complete response. 800 words minimum. Thank you."
                     }
             ],
             max_tokens=max_tokens,
@@ -123,7 +123,7 @@ def main():
     today = datetime.today().strftime('%Y-%m-%d')  # format the date as 'YYYY-MM-DD'
 
     # Save the prompt to a file
-    with open(f'weekly_scripts/alt2_weekly_script_{today}.txt', 'w', encoding='utf-8') as f:
+    with open(f'weekly_scripts/weekly_script_{today}.txt', 'w', encoding='utf-8') as f:
         f.write(f"Weekly Summary for {today}:\n")
         f.write(completion + "\n")
 

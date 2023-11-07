@@ -39,19 +39,20 @@ class Document:
         self.metadata = metadata
 # Combine the news texts from all days into one list and store additional info in metadata
 raw_documents = []
-for day_news in raw_documents_dict.values():
-    for news in day_news:
-        headline = news[0]
-        if isinstance(news[4], time.struct_time):  # We're now checking index 4
-            date_time = time.strftime("%Y-%m-%d %H:%M:%S", news[4])  # Convert time.struct_time to string
-        elif isinstance(news[4], str):  # We're now checking index 4
-            date_time = news[4]  # Use it directly
-        else:
-            date_time = 'N/A'  # Placeholder string
-        link = news[3]
-        summary = news[2]
-        metadata = {'headline': headline, 'date_time': date_time, 'link': link, 'summary': summary}
-        raw_documents.append((news[2], metadata))
+for week_number, week_data in raw_documents_dict.items():
+    for day_name, day_news in week_data.items():
+        for news in day_news:
+            headline = news[0]
+            if isinstance(news[4], time.struct_time):  # Checking index 4
+                date_time = time.strftime("%Y-%m-%d %H:%M:%S", news[4])  # Convert time.struct_time to string
+            elif isinstance(news[4], str):  # Checking index 4
+                date_time = news[4]  # Use it directly
+            else:
+                date_time = 'N/A'  # Placeholder string
+            link = news[3]
+            summary = news[2]
+            metadata = {'headline': headline, 'date_time': date_time, 'link': link, 'summary': summary}
+            raw_documents.append((news[2], metadata))
 
 # Convert the list of strings and metadata into a list of Document objects
 documents = [Document(text, metadata) for text, metadata in raw_documents]
@@ -91,7 +92,7 @@ metadata_field_info = [
     ),
     AttributeInfo(
         name="summary",
-        description="A sumary of the article",
+        description="A summary of the article",
         type="string",
     ),
 ]
@@ -115,9 +116,10 @@ schema = {
     "required": ["topic"],
 }
 
-# Get a list of all files in the directory with the given prefix
+# # Get a list of all files in the directory with the given prefix
 files = glob.glob('super_summaries/modular_daily_script_*.txt')
-
+# Get a list of all files in the directory with the given prefix
+# files = glob.glob('weekly_scripts/weekly_script_*.txt')
 # Find the most recent file
 most_recent_file = max(files, key=os.path.getctime)
 
@@ -148,15 +150,18 @@ extracted_entities = extraction_chain.run(text)
 
 # Clean the topics
 extracted_entities = clean_topics(extracted_entities)
+# Take at most 8 entities
+extracted_entities = extracted_entities[:8]
 
 # Now extracted_entities should be a list of entities
 # Use each entity as a topic to run the retriever
 summaries_str = ""
+# Read the content from the file
+with open('russo_ukranian_war_abridged.txt', 'r') as file:
+    russo_ukranian_war_summary = file.read()
+
 for entity in extracted_entities:
     relevant_documents = retriever.get_relevant_documents(entity['topic'])
-    # Summarize all documents
-    #summary = summarization_chain.run(relevant_documents)
-
     # Prepare the document info and summary for GPT
     doc_info_and_summary = ""
     for i, doc in enumerate(relevant_documents[:1]):
@@ -165,19 +170,23 @@ for entity in extracted_entities:
         doc_info_and_summary += f"Summary: {doc.metadata['summary']}\n"
         doc_info_and_summary += f"Date and Time: {doc.metadata['date_time']}\n"
         doc_info_and_summary += f"Link: {doc.metadata['link']}\n"
-        #doc_info_and_summary += f"Summary: {summary[i]}\n"  # Assuming each document has a summary
         doc_info_and_summary += "\n-----------------\n"
 
     summaries_str += f"\nTopic: {entity['topic']}\n{doc_info_and_summary}"
+
+# # Append the content of russo_ukranian_war_abridged.txt to summaries_str
+# summaries_str += f"\n{russo_ukranian_war_summary}"
+
 print(summaries_str)
+
 # Generate GPT response
 openai.api_key = os.getenv('OPENAI_API_KEY')
 response1 = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo-16k",
+    model="gpt-4",
     messages=[
         {
             "role": "system",
-            "content": f"You are a cutting-edge AI assistant named 'Cortex', tasked with crafting a professional news broadcast titled, 'NewsPlanetAI', a highly trusted news program.  Your task is to read the proposed broadcast which will be supplied by the user, and elaborate on the identified topics and inject more context using the news articles provided here. If the articles are relevant to the content, you should insert the relevant information smoothly and coherently. If you insert information, PASS ONE URL AS A SOURCE, write the entire URL. \n\nRelevant News:\n{summaries_str}"
+            "content": f"You are a cutting-edge AI assistant named 'Cortex', tasked with crafting a professional news broadcast titled, 'NewsPlanetAI', a highly trusted news program.  Your task is to read the proposed broadcast which will be supplied by the user, and elaborate (without changing the content and tone of the proposed script) on the identified topics and inject more context using the news articles provided here. If the articles are relevant to the content, you should insert the relevant information smoothly and coherently. If you insert information, PASS ONE URL AS A SOURCE, write the entire URL. \n\nRelevant News:\n{summaries_str}"
         },
         {
             "role": "user",
@@ -199,7 +208,7 @@ from datetime import datetime
 # Replace '.' with '.\n'
 response_content = response_content.replace('. ', '.\n')
 date_string = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-filename = f"super_summaries/refined/refined_super_summary_{date_string}.txt"
+filename = f"super_summaries/refined/refined_weekly_super_summary_{date_string}.txt"
 
 with open(filename, 'w', encoding='utf-8') as f:
     f.write(response_content)

@@ -154,8 +154,8 @@ def generate_newsletter(top_articles_by_category: Dict[str, List[Tuple]]) -> str
         <div class="container">
         <h1 style="font-family: Arial, sans-serif; color: #333;">Daily Briefing with Cortex</h1>
         <div style="text-align: center; background-color: #3da0ae; color: #ffffff; padding: 10px; border-radius: 5px;">
-            <h2 style="margin: 0;">Daily Briefing - Aug 1, 2023 - NewsPlanetAi</h2>
-            <a href="https://soundcloud.com/norsninja/daily-briefing-august-1-2023-912-am?si=8a8a0789f6744c0d90c4c409f3e4b1a7&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing" target="_blank" style="color: #ffffff; text-decoration: none; display: inline-block; margin-top: 10px; padding: 10px 20px; background-color: #ffffff; color: #3da0ae; border-radius: 20px;">Listen on SoundCloud</a>
+            <h2 style="margin: 0;">Daily Briefing - Nov 7, 2023 - NewsPlanetAi</h2>
+            <a href="https://on.soundcloud.com/G8KKJ" target="_blank" style="color: #ffffff; text-decoration: none; display: inline-block; margin-top: 10px; padding: 10px 20px; background-color: #ffffff; color: #3da0ae; border-radius: 20px;">Listen on SoundCloud</a>
         </div>
         <hr style="border: 0; height: 1px; background: #333; margin-top: 2em; margin-bottom: 2em;">
 
@@ -233,7 +233,7 @@ def upload_to_ftp(file_path: str, ftp_host: str, ftp_user: str, ftp_password: st
 def main():
     # Load and preprocess data
     print("Loading and preprocessing data")
-    summaries = load_data('cache/summaries.p')
+    summaries = load_data('cache/module_summaries.p')
     summaries_by_categories = group_by_category(summaries)
 
     # Load model

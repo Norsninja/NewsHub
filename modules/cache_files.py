@@ -18,27 +18,27 @@ def load_cache(filename):
         return pickle.load(file)
 
 def save_to_weekly_cache(summaries, cache_file='cache/modular_weekly_cache.pkl'):
-    try:
-        # Load the existing cache or create a new one if it doesn't exist
-        if os.path.exists(cache_file):
-            with open(cache_file, 'rb') as f:
-                weekly_cache = pickle.load(f)
-        else:
-            weekly_cache = {}
+    # Get the current week number
+    current_week_number = datetime.now().isocalendar()[1]
 
-        # Get the current day of the week
-        today = datetime.now().strftime('%A')
+    if os.path.exists(cache_file):
+        with open(cache_file, 'rb') as f:
+            cache = pickle.load(f)
+    else:
+        cache = {}
 
-        # If the list for today has not been populated, add the summaries
-        if today not in weekly_cache or not weekly_cache[today]:
-            weekly_cache[today] = summaries
+    # Get today's name (e.g., 'Monday')
+    today = datetime.now().strftime('%A')
 
-            # Save the cache
-            with open(cache_file, 'wb') as f:
-                pickle.dump(weekly_cache, f)
-                
-    except Exception as e:
-        print(f"Error while saving to weekly cache: {e}")
+    # If this week's data doesn't exist in the cache, create it
+    if current_week_number not in cache:
+        cache[current_week_number] = {}
+
+    # Add today's summaries to this week's data
+    cache[current_week_number][today] = summaries
+
+    with open(cache_file, 'wb') as f:
+        pickle.dump(cache, f)
 
 # Proposed Monthly Cache
 # in summarize weekly cache file

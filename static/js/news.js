@@ -145,8 +145,14 @@ fetch('../news.json')
       // Create navbar link
       const navLink = document.createElement('a');
       navLink.classList.add('nav-link');
-      navLink.href = `#${categoryDiv.id}`;
+      navLink.href = `javascript:void(0);`; // Prevent default navigation
       navLink.textContent = category.name;
+      navLink.addEventListener('click', function() {
+        const navbarHeight = document.getElementById('dynamic-navbar').offsetHeight; // Replace with your navbar ID
+        const targetDiv = document.getElementById(categoryDiv.id);
+        const extraOffset = 15; // Adjust this value as needed
+        window.scrollTo(0, targetDiv.offsetTop - navbarHeight - extraOffset);
+      });
 
       // Append link to item and item to navbar
       navItem.appendChild(navLink);

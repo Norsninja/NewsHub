@@ -17,7 +17,7 @@ else:
     print("CUDA is not available. Using CPU for computations.")
 
 
-def summarize_weekly_cache(cache_file='cache/weekly_cache.pkl'):
+def summarize_weekly_cache(cache_file='cache/test_weekly_cache.pkl'):
     try:
         # Check if the cache file exists
         if not os.path.exists(cache_file):
@@ -26,7 +26,11 @@ def summarize_weekly_cache(cache_file='cache/weekly_cache.pkl'):
 
         # Load the weekly cache
         with open(cache_file, 'rb') as f:
-            weekly_cache = pickle.load(f)
+            cache = pickle.load(f)
+
+        # Get the data for the current week
+        current_week_number = datetime.now().isocalendar()[1]
+        weekly_cache = cache.get(current_week_number, {})
 
         # Initialize the tokenizer and model
         model_name = 'facebook/bart-large-cnn'
@@ -36,12 +40,20 @@ def summarize_weekly_cache(cache_file='cache/weekly_cache.pkl'):
         # Initialize the summarization pipeline
         summarizer = pipeline('summarization', model=model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
 
-
         # Create a dictionary to hold the summarized summaries
         summarized_summaries = {}
 
+        # Create a list of the days you want to include in your summarization
+        days_to_include = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+
         # Iterate over the days of the week
-        for day, summaries in tqdm(weekly_cache.items(), desc="Processing days"):
+        for day in tqdm(days_to_include, desc="Processing days"):
+            # Check if there's data for this day in the cache
+            if day not in weekly_cache:
+                continue
+
+            summaries = weekly_cache[day]
+
             # Initialize a list to hold the summarized summaries for this day
             day_summaries = []
 
@@ -62,6 +74,7 @@ def summarize_weekly_cache(cache_file='cache/weekly_cache.pkl'):
         return summarized_summaries
     except Exception as e:
         print(f"Error while summarizing weekly cache: {e}")
+
     
 
 
@@ -80,7 +93,7 @@ def summarize_day_summaries(summaries, max_length=300, min_length=200, model_nam
     text = ' '.join(summaries)
 
     # Divide the text into chunks of approximately 10000 characters each
-    chunks = [text[i:i+5000] for i in range(0, len(text), 5000)]
+    chunks = [text[i:i+4000] for i in range(0, len(text), 4000)]
 
     # Initialize a list to hold the summaries of the chunks
     chunk_summaries = []
@@ -95,33 +108,6 @@ def summarize_day_summaries(summaries, max_length=300, min_length=200, model_nam
 
     return summary
 
-def save_to_monthly_cache(summarized_summaries, cache_file='cache/modular_monthly_cache.pkl'):
-    try:
-        # Load the existing cache or create a new one if it doesn't exist
-        if os.path.exists(cache_file):
-            with open(cache_file, 'rb') as f:
-                monthly_cache = pickle.load(f)
-        else:
-            monthly_cache = {}
-
-        # Get the current year, month, and week number
-        today = datetime.now()
-        current_year_month_week = today.strftime('%Y-%m-W%W')
-
-        # Check if the current year-month-week's data already exists in the cache
-        if current_year_month_week not in monthly_cache:
-            # Create a new entry for this year-month-week
-            monthly_cache[current_year_month_week] = summarized_summaries
-
-        # Save the cache
-        with open(cache_file, 'wb') as f:
-            pickle.dump(monthly_cache, f)
-
-    except Exception as e:
-        print(f"Error while saving to monthly cache: {e}")
-
-
-
 
 def main():
     summarized_summaries = summarize_weekly_cache()
@@ -134,9 +120,7 @@ def main():
     # Save the summarized summaries to a file
     with open('weekly_scripts/final_weekly_summaries.json', 'w', encoding='utf-8') as f:
         json.dump(summarized_summaries, f, indent=4, ensure_ascii=False)
-
-    # Append the summarized summaries to the monthly cache
-    save_to_monthly_cache(summarized_summaries)
+ 
 
 if __name__ == "__main__":
     main()

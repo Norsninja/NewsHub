@@ -23,6 +23,7 @@ CACHE_FILE = config['Cache']['LocCacheFile']
 openai_api_key = config['OPENAI']['OPENAI_API_KEY']
 
 def extract_locations(summaries):
+    print("inside extract_locations")
         # Attempt to load cache
     if os.path.exists(CACHE_FILE):
         with open(CACHE_FILE, 'rb') as f:
@@ -53,7 +54,8 @@ def extract_locations(summaries):
                     max_tokens=80,
                     top_p=1,
                     frequency_penalty=0,
-                    presence_penalty=0
+                    presence_penalty=0,
+                    request_timeout=15  # Set the request timeout to 15 seconds
                 )
                 # If the API call succeeds, exit the loop
                 
@@ -67,38 +69,45 @@ def extract_locations(summaries):
                 break
             except openai.error.APIError as e:
                 print(f"OpenAI API returned an API Error: {e}. Retrying...")
-                time.sleep(2)  # Wait for 2 seconds before retrying
+                time.sleep(1)  # Wait for 2 seconds before retrying
             except openai.error.APIConnectionError as e:
                 print(f"Failed to connect to OpenAI API: {e}. Retrying...")
-                time.sleep(2)
+                time.sleep(1)
             except openai.error.RateLimitError as e:
                 print(f"OpenAI API request exceeded rate limit: {e}. Retrying after a longer delay...")
-                time.sleep(10)  # Wait longer if rate limit has been exceeded
+                time.sleep(2)  # Wait longer if rate limit has been exceeded
             except openai.error.ServiceUnavailableError as e:
                 print(f"OpenAI API service unavailable: {e}. Retrying...")
-                time.sleep(10)  # Wait for 10 seconds before retrying
+                time.sleep(2)  # Wait for 10 seconds before retrying
+            except openai.error.Timeout as e:
+                print(f"Request timed out: {e}. Retrying...")
+                time.sleep(3)  # You may want to implement exponential backoff here                
         else:
             # If the API call failed 3 times, add a None location and continue with the next summary
             print("Failed to get location for a summary after 3 attempts. Skipping...")
             locations.append(None)
             continue
 
-    cache_data = (datetime.now(), locations)
+    # Check if the lengths of summaries and extracted_locations are different
+    if len(summaries) != len(locations):
+        # If they are different, append "None" to extracted_locations to match the lengths
+        locations += [None] * (len(summaries) - len(locations))
 
+    # Cache data and return locations
+    cache_data = (datetime.now(), locations)
     with open(CACHE_FILE, 'wb') as f:
         pickle.dump(cache_data, f)
-
     return locations
 
 
-
-
 def get_coordinates(locations):
-    geolocator = Nominatim(user_agent="NewsPlanetAi", timeout=10)  # 10 seconds of timeout
+    print("Inside get_coordinates")
+    geolocator = Nominatim(user_agent="NewsPlanetAi", timeout=3)  # 10 seconds of timeout
     coordinates = []
-    for location in locations:
-        retries = 3  # number of retries
-        delay = 5  # delay in seconds
+    retries = 3  # number of retries
+    delay = 5  # delay in seconds
+
+    for location in tqdm(locations, desc="Processing locations"):
         for i in range(retries):
             try:
                 # If location is "None", append None coordinates and continue
@@ -121,7 +130,6 @@ def get_coordinates(locations):
             except (GeocoderTimedOut, GeocoderServiceError):
                 if i < retries - 1:  # i is zero indexed
                     time.sleep(delay)  # wait before trying to fetch the data again
-                    print(f"Geocoding timed out for location: {location}. Retrying...")
                 else:
                     print(f"Geocoding failed for location: {location}. Appending None coordinates.")
                     coordinates.append((None, None))
@@ -149,8 +157,8 @@ def generate_geojson(summaries, extracted_locations, coordinates):
 
     for i in range(len(summaries)):
         headline, category, text, url, timestamp, source = summaries[i]
-        location = extracted_locations[i]
-        coords = coordinates[i]
+        location = extracted_locations[i] if i < len(extracted_locations) else None
+        coords = coordinates[i] if i < len(coordinates) else None
 
         feature = {
             "type": "Feature",
