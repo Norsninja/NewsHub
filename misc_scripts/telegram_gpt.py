@@ -6,14 +6,26 @@ import configparser
 import os
 import openai
 
+# Initialize the ConfigParser
+config = configparser.ConfigParser()
+
+# Read the suite_config.ini file
+config.read('modules/suite_config.ini')
+
 # Set up logging
+logging_level = config.get('logging', 'level', fallback='WARNING')
 logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s',
-                    level=logging.WARNING)
+                    level=getattr(logging, logging_level))
 
 # Telegram API credentials
-api_id = '25913587'
-api_hash = 'a84b5c550f05f487bce0a33a86c37038'
-phone_number = '+18186659743'
+api_id = config.get('telegram', 'api_id')
+api_hash = config.get('telegram', 'api_hash')
+phone_number = config.get('telegram', 'phone_number')
+# Retrieve FTP values from the config file
+ftp_host = config.get('FTP', 'Host')
+ftp_user = config.get('FTP', 'User')
+ftp_password = config.get('FTP', 'Password')
+ftp_directory = config.get('FTP', 'Directory')
 
 utc_now = datetime.now(pytz.utc)
 time_24_hours_ago = utc_now - timedelta(days=1)
@@ -156,7 +168,7 @@ with TelegramClient('session_name', api_id, api_hash) as client:
     
     if not client.is_user_authorized():
         print("Authorizing...")
-        client.start(phone_number)
+        client.start(phone=phone_number)
         print("Authorized successfully")
 
     # List of channel usernames or IDs
@@ -324,6 +336,6 @@ with TelegramClient('session_name', api_id, api_hash) as client:
     
     # Step 3: Upload the HTML file to your server using the provided variables
     remote_filename = 'osint_report.html'
-    upload_to_ftp(html_file_name, 'ftp.newsplanetai.com', 'newsrwxb', '#Panthera133!', '/public_html/ukraine/', remote_filename)
+    upload_to_ftp(html_file_name, ftp_host, ftp_user, ftp_password, ftp_directory + 'ukraine/', remote_filename)
 
     print(f"HTML report uploaded to server as: {remote_filename}")
