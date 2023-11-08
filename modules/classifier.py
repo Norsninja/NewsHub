@@ -35,8 +35,10 @@ def categorize_headlines(headlines):
 
         response = robust_api_call(lambda: openai.ChatCompletion.create(
             model=model,
-            messages=conversation
-        ))
+            messages=conversation,
+            request_timeout = 30
+        ), retries=3, base_delay=2)
+
 
         if response is not None:
             # Parse the category from the response

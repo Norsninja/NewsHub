@@ -1,20 +1,25 @@
 import time
 import openai
 
-def robust_api_call(call, retries=3, delay=2, rate_limit_delay=10):
-    for _ in range(retries):  # Attempt the API call n times
+def robust_api_call(call, retries=3, base_delay=2):
+    delay = base_delay
+    for attempt in range(retries):
         try:
-            return call()  # Perform the API call and return the result if successful
+            print(f"Attempting API call, attempt {attempt + 1}")
+            return call()
         except openai.error.APIError as e:
-            print(f"OpenAI API returned an API Error: {e}. Retrying...")
-            time.sleep(delay)  # Wait for a specified delay before retrying
+            print(f"API Error: {e}. Attempt {attempt + 1} of {retries}")
         except openai.error.APIConnectionError as e:
-            print(f"Failed to connect to OpenAI API: {e}. Retrying...")
-            time.sleep(delay)
+            print(f"Connection Error: {e}. Attempt {attempt + 1} of {retries}")
         except openai.error.RateLimitError as e:
-            print(f"OpenAI API request exceeded rate limit: {e}. Retrying after a longer delay...")
-            time.sleep(rate_limit_delay)  # Wait longer if rate limit has been exceeded
+            print(f"Rate Limit Exceeded: {e}. Waiting {delay} seconds.")
         except openai.error.ServiceUnavailableError as e:
-            print(f"OpenAI API service unavailable: {e}. Retrying...")
-            time.sleep(rate_limit_delay)  # Wait for a specified delay before retrying
-    return None  # Return None if the API call failed after all retries
+            print(f"Service Unavailable: {e}. Waiting {delay} seconds.")
+        except openai.error.Timeout as e:
+            print(f"Timeout: {e}. Waiting {delay} seconds.")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}. Attempt {attempt + 1} of {retries}")
+        time.sleep(delay)
+        delay *= 2  # Exponential backoff for any retry scenario
+    print("All API call attempts failed.")
+    return None

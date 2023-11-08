@@ -43,8 +43,9 @@ def summarize_articles(categorized_headlines, retries=3, wait_time_seconds=2):
                     {"role": "system", "content": "You are an AI tasked with summarizing news articles in a professional manner"},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=180 # Summary Length                
-            ), retries=retries, delay=wait_time_seconds)
+                max_tokens=180, # Summary Length
+                request_timeout = 30                
+            ), retries=retries, base_delay=wait_time_seconds)
 
             if response is not None:
                 summary = response['choices'][0]['message']['content']
@@ -81,7 +82,8 @@ def summarize_super_summary(super_summary_text):
                 {"role": "user", "content": prompt}
             ],
             max_tokens=600                
-        ))
+        ), retries=3, base_delay=2)
+
 
         if response is not None:
             summary = response['choices'][0]['message']['content']

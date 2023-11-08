@@ -154,8 +154,8 @@ def generate_newsletter(top_articles_by_category: Dict[str, List[Tuple]]) -> str
         <div class="container">
         <h1 style="font-family: Arial, sans-serif; color: #333;">Daily Briefing with Cortex</h1>
         <div style="text-align: center; background-color: #3da0ae; color: #ffffff; padding: 10px; border-radius: 5px;">
-            <h2 style="margin: 0;">Daily Briefing - Nov 7, 2023 - NewsPlanetAi</h2>
-            <a href="https://on.soundcloud.com/G8KKJ" target="_blank" style="color: #ffffff; text-decoration: none; display: inline-block; margin-top: 10px; padding: 10px 20px; background-color: #ffffff; color: #3da0ae; border-radius: 20px;">Listen on SoundCloud</a>
+            <h2 style="margin: 0;">Daily Briefing - Nov 8, 2023 - NewsPlanetAi</h2>
+            <a href="https://on.soundcloud.com/ED7md" target="_blank" style="color: #ffffff; text-decoration: none; display: inline-block; margin-top: 10px; padding: 10px 20px; background-color: #ffffff; color: #3da0ae; border-radius: 20px;">Listen on SoundCloud</a>
         </div>
         <hr style="border: 0; height: 1px; background: #333; margin-top: 2em; margin-bottom: 2em;">
 
