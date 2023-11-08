@@ -120,3 +120,4 @@ static/radar_chart.png
 misc_scripts/scrape_daily_report_and_telegram_wiki.py
 misc_scripts/telegram_gpt.py
 session_name.session
+temp_text_file.txt
