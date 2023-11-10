@@ -39,7 +39,7 @@ def extract_locations(summaries):
         for _ in range(3):  # Try the API call up to 3 times
             try:
                 response = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
+                    model="gpt-3.5-turbo-1106",
                     messages=[
                         {
                             "role": "system",

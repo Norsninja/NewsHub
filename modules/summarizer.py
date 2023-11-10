@@ -78,7 +78,7 @@ def summarize_super_summary(super_summary_text):
         response = robust_api_call(lambda: openai.ChatCompletion.create(
             model=summarize_super_summary_model,
             messages=[
-                {"role": "system", "content": "You are an AI tasked with summarizing news articles in a professional manner."},
+                {"role": "system", "content": "You are tasked with summarizing a news briefing for the hour."},
                 {"role": "user", "content": prompt}
             ],
             max_tokens=600                

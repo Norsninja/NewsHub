@@ -21,7 +21,6 @@ map_plotly.html
 map_plotly.py
 map.html
 ner_test.py
-news_twitter_similarity.py
 news_twitter.py
 news.json
 newsletter_cluster.html
@@ -93,6 +92,7 @@ json/
 logs/
 misc_scripts/newsquery2/
 misc_scripts/templates/
+misc_scripts/news_twitter_simila
 ascii_art.py
 ascii_header.txt
 langchain_super_summary.py
@@ -121,3 +121,4 @@ misc_scripts/scrape_daily_report_and_telegram_wiki.py
 misc_scripts/telegram_gpt.py
 session_name.session
 temp_text_file.txt
+misc_scripts/news_twitter_similarity.py

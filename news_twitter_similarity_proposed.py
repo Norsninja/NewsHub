@@ -84,7 +84,7 @@ def generate_engaging_tweet(headline: str, summary: str, url: str) -> str:
         }
     ]
     response = openai.ChatCompletion.create(
-        model="gpt-4",
+        model="gpt-4-1106-preview",
         messages=messages,
         temperature=0.8,
         max_tokens=60
@@ -114,7 +114,7 @@ def main():
     print("Loading model")
     model = SentenceTransformer(MODEL_NAME)
 
-    # Generate embeddings
+    # Generate embedding
     print("Generating embeddings")
     normalized_embeddings = generate_embeddings(summaries, model)
 

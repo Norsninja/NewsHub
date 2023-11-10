@@ -6,8 +6,9 @@ class DocumentRetriever:
     def __init__(self, vectorstore):
         self.vectorstore = vectorstore
         self.llm = OpenAI(temperature=0)
+        print("DocumentRetriever Called...")
 
-    def retrieve_documents(self, query):
+    def retrieve_documents(self, query, num_articles=None):
         metadata_field_info = [
             AttributeInfo(name="date_time", description="The date and time the news article was published", type="string"),
             AttributeInfo(name="headline", description="The headline of the news article", type="string"),
@@ -20,9 +21,9 @@ class DocumentRetriever:
             self.vectorstore,
             document_content_description,
             metadata_field_info,
-            enable_limit=True,
+            enable_limit=False,
             verbose=True,
             search_type="mmr",
-            search_kwargs={'k': 10, 'lambda_mult': 0.25},
+            search_kwargs={'k': num_articles, 'lambda_mult': 0.25},
         )
         return retriever.get_relevant_documents(query)

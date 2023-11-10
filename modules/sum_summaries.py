@@ -66,11 +66,17 @@ def load_openai_api_key(config_file='modules/suite_config.ini'):
         print(f"Error while loading OpenAI API key: {e}")
         return None
     
-def generate_gpt_completion(prompt, api_key, model=super_summary_model, max_tokens=700, temperature=0.7):
+def generate_gpt_completion(prompt, api_key, model=super_summary_model, max_tokens=750, temperature=0.7):
     """Generate a GPT completion given a prompt."""
     # Get the current time
     current_time = datetime.now()
-
+    section_title_integration_instruction = (
+        "Integrate section titles into the broadcast script by using them as "
+        "introductory phrases for each section's content. Begin the content of "
+        "each section by referencing its title and then proceed with the related news. "
+        "For example, say 'Today in The World Watches, we focus on...' to transition into "
+        "the topics of that section."
+    )
     # Format the current time as a string
     current_time_str = current_time.strftime("%Y-%m-%d %H:%M:%S")
     openai.api_key = api_key
@@ -79,7 +85,7 @@ def generate_gpt_completion(prompt, api_key, model=super_summary_model, max_toke
         with open(latest_file_path, 'r', encoding='utf-8') as file:
             latest_super_summary_content = file.read()
         latest_super_summary_text = summarize_super_summary(latest_super_summary_content)
-        prompt.append((". Moving on to the summary of previous events:", "", latest_super_summary_text, "", "", "")) 
+        prompt.append((". Moving on to the summary of the previous hour's events:", "", latest_super_summary_text, "", "", "")) 
     try:
         response = robust_api_call(lambda: openai.ChatCompletion.create(
             model=model,
@@ -102,7 +108,7 @@ def generate_gpt_completion(prompt, api_key, model=super_summary_model, max_toke
                 },
                 {
                     "role": "user",
-                    "content": f"The summaries for this hour's ({current_time_str}) events are: {prompt}. Please craft the hourly news broadcast as per the instructions provided in one complete response (500 words Minimum!). Thank you.",
+                    "content": f"The summaries for this hour's ({current_time_str}) events are: {prompt}. Please craft the hourly news broadcast as per the instructions provided in one complete response, introduce each section with the section title (500 words Minimum!). " + section_title_integration_instruction + " Thank you.",
                 },
             ],
             max_tokens=max_tokens,
