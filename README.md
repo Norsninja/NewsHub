@@ -1,7 +1,13 @@
-# NewsHub
-NewsPlanetAi is an advanced news aggregator and summarizer built with Python. It scrapes headlines from various news sources, categorizes them, summarizes the articles, extracts geographical locations, and generates a "super summary". It uses OpenAI's GPT-3 model for text classification and summarization.
 
-## Overview of Modules
+# NewsPlanetAI: AI-Powered News Summarization and Broadcasting
+
+## Overview
+
+NewsPlanetAI is an innovative project that leverages advanced AI technologies for scraping, summarizing, and broadcasting news. The system is designed to automatically fetch news articles from various sources, categorize and summarize them, and then compile these summaries into a concise Super Summary. This Super Summary is converted into an audio format using Eleven Labs Text-to-Speech (TTS) technology, giving it a unique voice similar to a blend of David Attenborough and Morgan Freeman, and is subsequently uploaded to SoundCloud for public access.
+
+## Project Structure
+
+The project comprises several Python scripts, each serving a specific role in the news aggregation and summarization process:
 
 - **scraper.py:** Scrapes headlines from various news sources.
 - **classifier.py:** Categorizes headlines using OpenAI's GPT-3 model.
@@ -11,46 +17,66 @@ NewsPlanetAi is an advanced news aggregator and summarizer built with Python. It
 - **summarizer.py:** Generates summaries for articles and organizes them by category.
 - **super_summary.py:** Generates a "super summary" using a list of news summaries.
 - **locations.py:** Extracts and appends geographical locations to the news summaries.
+- **main.py:** Orchestrates the overall process, from scraping to summarization.
 
-## Usage
+## Process Flow
 
-The main functionality of NewsPlanetAi is provided by the `main.py` script. This script coordinates the process of scraping headlines, categorizing them, summarizing the articles, and generating a super summary. It then saves the generated news data to a JSON file and uploads the file to an FTP server.
+1. **Scraping Headlines**: Uses Goose3 and Feedparser to extract headlines from various news sources.
+2. **Categorizing Headlines**: Employs GPT-3.5 Turbo 1106 to categorize headlines.
+3. **Summarizing Articles**: Summarizes articles using GPT-3.5 Turbo 1106.
+4. **Caching Summaries**: Stores summaries using the Python `pickle` module.
+5. **Grouping Summaries by Category**: Organizes summaries in categories for structured presentation.
+6. **Generating Top Articles by Category**: Selects top articles using a Sentence Transformer model.
+7. **Summarizing Daily Cache**: Condenses daily news using the BART Large CNN model.
+8. **Generating Super Summary**: Compiles a comprehensive summary using GPT-4.
+9. **Converting to Audio**: Transforms the Super Summary text into an audio file using Eleven Labs TTS.
+10. **Uploading to SoundCloud**: Manually uploads the audio file to SoundCloud.
+11. **Social Media Promotion**: Generates promotional content for social media platforms.
 
-To run the script, simply execute the `main.py` script (I will update requirements soon)
+## Technologies
 
-Make sure to set up the suite_config.ini file with your configuration settings before running the script.
+- **AI Models**: GPT-3.5 Turbo, GPT-4, BART Large CNN, Sentence Transformers.
+- **Text-to-Speech**: Eleven Labs TTS.
+- **Data Handling**: Python, PyTorch, Goose3, Feedparser, `pickle`.
+- **Geocoding and Mapping**: GeoPy.
+- **Social Media Integration**: Custom scripts utilizing GPT models.
 
-# Example suite_config.ini:
+## Setup and Configuration
 
+To run NewsPlanetAI, users need to set up their own website with FTP details for uploading content. Additionally, a `suite_config.ini` file must be created in the `modules` folder with the necessary configurations, such as API keys, model details, and category settings.
+
+### Configuration File Structure
+
+```ini
 [General]
 UseTqdm = True
-TruncateMaxTokens = 4096
+TruncateMaxTokens = 2000
 
 [FTP]
-Host = your_ftp_host
-User = your_ftp_username
-Password = your_ftp_password
-Directory = your_ftp_directory
-
+Host = ftp.fakenews.com
+User = cortex
+Password = AFancyDerickDotCom
+Directory = /public_html/
 [Cache]
-Directory = cache_directory_path
-MaxAgeHours = 24
-WeeklyCacheFile = weekly_cache.p
-DailyCacheFile = daily_cache.p
-LocCacheFile = locations_cache.p
+Directory = cache
+MaxAgeHours = 1
+WeeklyCacheFile = cache/your_overall_cache.pkl
+DailyCacheFile = cache/daily_summaries.p
+LocCacheFile = cache/locations.pkl
 
 [Summaries]
-MaxSummaryLength = 4096
-MaxCacheAgeHours = 24
+MaxSummaryLength = 800
+MaxCacheAgeHours = 12
 
 [Headlines]
-Categories = Category1, Category2, Category3
+Categories = World News, US News, ...
 
 [Models]
-CategorizeHeadlines = model_name_for_categorizing_headlines
-SummarizeArticles = model_name_for_summarizing_articles
-SummarizeSuperSummary = model_name_for_summarizing_super_summary
-GetSuperSummary = model_name_for_getting_super_summary
+CategorizeHeadlines = gpt-3.5-turbo-1106
+SummarizeArticles = gpt-3.5-turbo-1106
+SummarizeSuperSummary = gpt-3.5-turbo-1106
+GetSuperSummary = gpt-4-1106-preview
+SimilarityModel = sentence-transformers/all-MiniLM-L6-v2
 
 [Retry]
 SummarizeArticlesRetries = 3
@@ -59,18 +85,32 @@ SummarizeSuperSummaryRetries = 3
 SummarizeSuperSummaryWaitTimeSeconds = 2
 
 [OPENAI]
-OPENAI_API_KEY = your_openai_api_key
+OPENAI_API_KEY = YourOpenAIKey
 
+[THRESHOLDS]
+SIMILARITY_THRESHOLD = 0.7
+TOP_N_ARTICLES = 1
 
-## Configuration
-The suite uses a configuration file (suite_config.ini) to handle various settings. This includes the OpenAI API key, FTP server details, cache settings, and model names for various tasks.
+[logging]
+level = WARNING
 
-## Note
-The suite uses OpenAI's GPT-3 model, which is a powerful language model capable of tasks like text classification and summarization. The quality and effectiveness of the suite largely depend on the performance of the GPT-3 model.
+[telegram]
+api_id = getyourown
+api_id = getyourown
+api_hash = getyourown
+phone_number = +getyourown
 
-## NewsPlanetAi in Action
+[TWITTER]
+api_key = getyourown
+api_secret_key = getyourown
+access_token = getyourown-getyourown
+access_token_secret = getyourown
 
-You can see NewsPlanetAi in action at [NewsPlanetAi.com](http://www.newsplanetai.com).
+### Running the System
 
+The system is designed to be run periodically (e.g., every hour) using a task scheduler that executes the `main.py` script.
 
+## Contributions
+
+NewsPlanetAI is an open-source project. Contributions, suggestions, and feedback are welcome to enhance its functionality and accuracy.
 
