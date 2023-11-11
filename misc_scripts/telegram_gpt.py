@@ -106,7 +106,7 @@ def generate_gpt_completion(prompt, api_key, model='gpt-3.5-turbo-16k', max_toke
         print(f"Error while generating GPT completion: {e}")
         return None
     
-def process_gpt_response(gpt_response, api_key, model='gpt-4', max_tokens=1000, temperature=0.5):
+def process_gpt_response(gpt_response, api_key, model='gpt-4-1106-preview', max_tokens=1000, temperature=0.5):
     """Generate a GPT completion given a prompt focused on the war in Ukraine."""
     current_time = datetime.now()
     openai.api_key = api_key
@@ -176,7 +176,7 @@ with TelegramClient('session_name', api_id, api_hash) as client:
   
     # Function to scrape recent messages from a channel
     #Limit reduced to 3 on high news days, default is 10
-    def scrape_channel_messages(channel, limit=3):
+    def scrape_channel_messages(channel, limit=4):
         print(f"Scraping messages from {channel}...")
         try:
             # Fetch messages from the last 24 hours

@@ -65,7 +65,7 @@ def summarize_text_file(file_path, model_name='facebook/bart-large-cnn', chunk_s
 
     return " ".join(summaries)
 
-def summarize_web_page(url, model_name='facebook/bart-large-cnn', chunk_size=2000, batch_size=10, max_length=500, min_length=200):
+def summarize_web_page(url, model_name='facebook/bart-large-cnn', chunk_size=2000, batch_size=10, max_length=600, min_length=200):
     # Fetch the content of the web page
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -130,7 +130,7 @@ def load_openai_api_key(config_file='modules/suite_config.ini'):
         print(f"Error while loading OpenAI API key: {e}")
         return None
     
-def generate_gpt_completion(prompt, api_key, model='gpt-4', max_tokens=1000, temperature=0.7):
+def generate_gpt_completion(prompt, api_key, model='gpt-4-1106-preview', max_tokens=1000, temperature=0.7):
     """Generate a GPT completion given a prompt focused on the war in Ukraine."""
     # Get the current time
     current_time = datetime.now()

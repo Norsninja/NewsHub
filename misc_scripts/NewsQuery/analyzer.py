@@ -45,11 +45,16 @@ class NewsAnalyzer:
         for i, doc in enumerate(documents):
             formatted_documents += f"\nDocument {i+1}:\n"
             formatted_documents += f"Headline: {doc.metadata['headline']}\n"
+            formatted_documents += f"Category: {doc.metadata['category']}\n"  # Added field
             formatted_documents += f"Date and Time: {doc.metadata['date_time']}\n"
+            formatted_documents += f"Source: {doc.metadata['source']}\n"  # Added field
+            formatted_documents += f"Location: {doc.metadata['location']}\n"  # Added field
+            formatted_documents += f"Coordinates: {doc.metadata['coordinates']}\n"  # Added field
             formatted_documents += f"Link: {doc.metadata['link']}\n"
-            formatted_documents += f"Summary: {doc.metadata['summary']}\n"  # Ensure 'summary' is in metadata
+            formatted_documents += f"Summary: {doc.metadata['summary']}\n"
             formatted_documents += "\n-----------------\n"
         return formatted_documents
+
 
 
     def analyze(self, query, num_articles):

@@ -6,10 +6,11 @@ import tiktoken
 class GPTResponse:
     def __init__(self):
         self.api_key = openai.api_key = os.getenv('OPENAI_API_KEY')
-        self.model = "gpt-4"
+        self.model = "gpt-4-1106-preview"
         self.history_file = 'misc_scripts/NewsQuery/conversation_history.json'
         self.messages = self.load_messages()
         self.encoding = tiktoken.encoding_for_model(self.model)
+        self.initial_query = None  # Attribute to store the initial query
         print("GptResponse Called...")
     def count_tokens(self):
         """
@@ -27,7 +28,7 @@ class GPTResponse:
             return [
                 {
                     "role": "system",
-                    "content": "You are an advanced news analysis AI. Your task is to provide a unified response to the query, making sure to consolidate all relevant information, and explain the changes over time. Engage in a reflective process to define the '5 Ws' (Who, What, Where, When, Why) for the topic, with a special focus on the 'When'. Adjust the date range as necessary based on significant events or developments identified in this phase. Determine and use the relevant info to the query or topic given by the user, based on the following article summaries to generate your response. Please ensure you don't refer to the articles by numbers but incorporate the information smoothly and coherently in your answer. Cite sources that best reflect the query by referring to the corresponding URL. Note the dates of all the articles returned and try to establish any patterns"
+                    "content": "You are an advanced news analysis AI. Your task is to provide a unified response to the query, making sure to consolidate all relevant information, and explain the changes over time. Engage in a reflective process to define the '5 Ws' (Who, What, Where, When, Why) for the topic, with a special focus on the 'When'. Determine and use the relevant info to the query or topic given by the user based on the following article summaries to generate your response. Please ensure you don't refer to the articles by numbers but incorporate the information smoothly and coherently in your answer. Cite sources that best reflect the query by referring to the corresponding URL. Note the dates of all the articles returned and try to establish any patterns"
                 }
             ]
         with open(self.history_file, mode='r', encoding='utf-8') as file:
@@ -38,15 +39,20 @@ class GPTResponse:
         with open(self.history_file, 'w', encoding='utf-8') as file:
             json.dump(self.messages, file, ensure_ascii=False, indent=4)
 
-    def get_response(self, query, doc_info_and_summary):
+    def get_response(self, query, doc_info_and_summary, max_tokens=1000):
         print("GptResponse get_response Called...")
-        # Append user query to messages
+
+        if self.initial_query is None:
+            self.initial_query = query  # Store the initial query
+            query_context = query
+        else:
+            # For subsequent queries, prepend the initial query context
+            query_context = f"In the context of {self.initial_query}, {query}"
         self.messages.append({
             "role": "user",
-            "content": query
-        })
-        
-        # Append summarized information only if it's provided
+            "content": query_context
+        })                    
+        # Append user query to messages
         if doc_info_and_summary:
             self.messages[-1]["content"] += f"\n\nSummarized Information:\n{doc_info_and_summary}"
 
@@ -55,7 +61,7 @@ class GPTResponse:
             model=self.model,
             messages=self.messages,
             temperature=.2,
-            max_tokens=600,
+            max_tokens=max_tokens,
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0
@@ -72,3 +78,15 @@ class GPTResponse:
         
         # Return the content of the assistant's response
         return self.messages[-1]["content"]
+    def clear_history(self):
+        '''
+        Clears the conversation history both in memory and in the history file.
+        '''
+        # Clearing the in-memory messages list
+        self.messages.clear()
+
+        # Overwriting the history file with an empty list
+        with open(self.history_file, 'w', encoding='utf-8') as file:
+            json.dump([], file, ensure_ascii=False, indent=4)
+
+        print("Conversation history cleared.")

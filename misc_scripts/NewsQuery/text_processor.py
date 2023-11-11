@@ -3,7 +3,7 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 
 class TextProcessor:
-    def __init__(self, chunk_size=1000, chunk_overlap=0):
+    def __init__(self, chunk_size=1200, chunk_overlap=0):
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         print("TextProcessor Called...")
