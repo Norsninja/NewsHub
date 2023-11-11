@@ -105,7 +105,7 @@ api_key = getyourown
 api_secret_key = getyourown
 access_token = getyourown-getyourown
 access_token_secret = getyourown
-ini```
+```
 
 ### Running the System
 
