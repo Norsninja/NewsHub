@@ -1,0 +1,214 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+      "title": "NewsPlanetAI API",
+      "description": "API for retrieving news based on different criteria such as category, headline, summary, location, timestamp, and the Daily Briefing.",
+      "version": "v1.0.0"
+    },
+    "servers": [
+      {
+        "url": "https://newsplanetai.com/dailyapi"
+      }
+    ],
+    "paths": {
+        "/search": {
+            "get": {
+              "description": "Perform a fuzzy search in the daily news articles",
+              "operationId": "fuzzySearchArticles",
+              "parameters": [
+                {
+                  "name": "query",
+                  "in": "query",
+                  "description": "The search query for fuzzy matching",
+                  "required": true,
+                  "schema": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "name": "field",
+                  "in": "query",
+                  "description": "The field to search in (e.g., 'summary', 'headline', 'location')",
+                  "required": true,
+                  "schema": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "name": "threshold",
+                  "in": "query",
+                  "description": "The threshold for fuzzy matching (default: 60)",
+                  "required": false,
+                  "schema": {
+                    "type": "integer",
+                    "default": 60
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successful response",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/NewsItem" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+      "/category": {
+        "get": {
+          "description": "Get news by category",
+          "operationId": "getNewsByCategory",
+          "parameters": [
+            {
+              "name": "category",
+              "in": "query",
+              "description": "The category to filter news",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/NewsItem" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/timestamp": {
+        "get": {
+          "description": "Get news by timestamp, defaults to today without a query",
+          "operationId": "getNewsByTimestamp",
+          "parameters": [
+            {
+              "name": "date",
+              "in": "query",
+              "description": "The date to filter news (format YYYY-MM-DD)",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/NewsItem" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },   
+      "/daily-briefing": {
+        "get": {
+          "description": "Retrieve the daily briefing, including the super summary of news and the latest SoundCloud track information",
+          "operationId": "getDailyBriefing",
+          "responses": {
+            "200": {
+              "description": "Successful response with daily briefing information",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "super_summary": {
+                        "type": "string",
+                        "description": "A summary of the latest news"
+                      },
+                      "latest_soundcloud_track": {
+                        "type": "object",
+                        "description": "Information about the latest SoundCloud track, if available",
+                        "nullable": true,
+                        "properties": {
+                          "title": {
+                            "type": "string",
+                            "description": "Title of the track"
+                          },
+                          "published": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Publish date of the track"
+                          },
+                          "link": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Link to the track"
+                          }
+                        }
+                      },
+                      "latest_soundcloud_track_error": {
+                        "type": "string",
+                        "description": "Error message if the latest SoundCloud track information could not be retrieved",
+                        "nullable": true
+                      }
+                    },
+                    "required": ["super_summary"]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/top-headlines": {
+        "get": {
+          "description": "Get all news articles marked as top headlines",
+          "operationId": "getTopHeadlines",
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/NewsItem" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "NewsItem": {
+          "type": "object",
+          "properties": {
+            "headline": { "type": "string" },
+            "summary": { "type": "string" },
+            "link": { "type": "string" },
+            "timestamp": { "type": "string" },
+            "location": { "type": "string" },
+            "coordinates": {
+              "type": "array",
+              "items": { "type": "number" }
+            },
+            "top_headline": { "type": "boolean" }
+          }
+        }
+      }
+    }
+}  

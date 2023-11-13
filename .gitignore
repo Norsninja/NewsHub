@@ -123,3 +123,4 @@ session_name.session
 temp_text_file.txt
 misc_scripts/news_twitter_similarity.py
 misc_scripts\NewsQuery\conversation_history.json
+dailynewsapi/dailynewsapi.py
